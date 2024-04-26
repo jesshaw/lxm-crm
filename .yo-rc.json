@@ -1,0 +1,30 @@
+{
+  "generator-jhipster": {
+    "applicationIndex": 0,
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "baseName": "lxmcrm",
+    "buildTool": "maven",
+    "cacheProvider": "ehcache",
+    "clientFramework": "react",
+    "clientPackageManager": "yarn",
+    "databaseType": "sql",
+    "devDatabaseType": "h2Disk",
+    "devServerPort": 9060,
+    "dtoSuffix": "Dto",
+    "enableHibernateCache": true,
+    "enableSwaggerCodegen": false,
+    "enableTranslation": true,
+    "entities": ["Employee"],
+    "jhiPrefix": "lxm",
+    "jhipsterVersion": "8.3.0",
+    "jwtSecretKey": "NzcyYzUzNmQyYjAwNjhmN2Q5MjhjNDU1OGY3NWVjYjA4YmE3ODAzYWMzZTRhYTQ2NzE2M2UyODJmZTNiNjIyOTBkZTQ0ZDY1ZDhkOThkZjMzMjU4MTYzOGQwMTI4OWFmYjI0MzYyZGUxOGE0M2FhMTdlMjMwZmRlNDU2MDc5M2M=",
+    "languages": ["zh-cn", "en"],
+    "lastLiquibaseTimestamp": 1714123922000,
+    "nativeLanguage": "zh-cn",
+    "packageFolder": "com/lexiangmaio/crm",
+    "packageName": "com.lexiangmaio.crm",
+    "prodDatabaseType": "mysql",
+    "testFrameworks": []
+  }
+}
