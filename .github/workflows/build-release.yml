@@ -25,6 +25,8 @@ jobs:
           echo "VERSION=${version}" >> $GITHUB_ENV
       - name: Commit changes
         run: |
+          git config --global user.email ${{ env.GIT_COMMITTER_EMAIL }}
+          git config --global user.name ${{ env.GIT_COMMITTER_NAME }}
           git commit -am "Release ${{ github.ref_name }}"
           git push
       - uses: actions/setup-java@v4
