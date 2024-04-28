@@ -18,7 +18,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'maven'
-          cache-dependency-path: 'sub-project/pom.xml' # optional
+          cache-dependency-path: 'pom.xml' # optional
       - name: Maven build
         run: mvn --batch-mode -Pdev clean package --file pom.xml
       # - name: Log in to the Container registry
