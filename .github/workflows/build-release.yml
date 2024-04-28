@@ -39,7 +39,7 @@ jobs:
       - name: Release content
         run: |
           echo ${{ github.sha }} > Release.txt
-          mv *.jar LxmCRM-${{ github.ref_name }}.jar
+          mv ./target/*.jar LxmCRM-${{ github.ref_name }}.jar
       - name: Show content
         run: cat Release.txt
       - name: Release
