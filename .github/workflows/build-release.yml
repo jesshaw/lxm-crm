@@ -20,7 +20,7 @@ jobs:
           cache: 'maven'
           cache-dependency-path: 'pom.xml' # optional
       - name: Maven build
-        run: mvn --batch-mode -Pdev clean package --file pom.xml
+        run: ./mvnw --batch-mode -Pdev clean package --file pom.xml
       # - name: Log in to the Container registry
       #   uses: docker/login-action@v3
       #   with:
