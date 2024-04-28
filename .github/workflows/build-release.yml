@@ -3,19 +3,30 @@ run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on:
   push:
     tags:
-      - 'v**'
+      - 'v*.*.*'
 permissions:
   contents: write
   discussions: write
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  GIT_COMMITTER_NAME: jesshaw
+  GIT_COMMITTER_EMAIL: jesshaw@126.com
 jobs:
   Build-Release-Image:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Update pom.xml version
+        run: |
+          version=$(xmlstarlet sel -N ns="http://maven.apache.org/POM/4.0.0" -t -v "//ns:project/ns:version" pom.xml | sed 's/-SNAPSHOT$//')
+          sed -i "s/<version>${version}-SNAPSHOT<\/version>/<version>${version}<\/version>/" pom.xml
+          echo "VERSION=${version}" >> $GITHUB_ENV
+      - name: Commit changes
+        run: |
+          git commit -am "Release ${{ github.ref_name }}"
+          git push
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
@@ -23,7 +34,7 @@ jobs:
           cache: 'maven'
           cache-dependency-path: 'pom.xml' # optional
       - name: Maven build
-        run: chmod +x mvnw && ./mvnw --batch-mode -Pdev clean package --file pom.xml
+        run: chmod +x mvnw && ./mvnw --batch-mode -Pdev,webapp clean package --file pom.xml
       # Publishing packages to GitHub Packages
       # - name: Publish package
       #   run: mvn --batch-mode deploy
@@ -39,7 +50,7 @@ jobs:
       - name: Release content
         run: |
           echo ${{ github.sha }} > Release.txt
-          mv ./target/*.jar LxmCRM-${{ github.ref_name }}.jar
+          mv ./target/*.jar LxmCRM-${{ env.VERSION }}.jar
       - name: Show content
         run: cat Release.txt
       - name: Release
@@ -48,7 +59,7 @@ jobs:
         with:
           files: |
             Release.txt
-            LxmCRM-${{ github.ref_name }}.jar
+            LxmCRM-${{ env.VERSION }}.jar
 
       # - name: Log in to the Container registry
       #   uses: docker/login-action@v3
