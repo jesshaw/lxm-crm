@@ -27,10 +27,8 @@ jobs:
         run: |
           git config --global user.email ${{ env.GIT_COMMITTER_EMAIL }}
           git config --global user.name ${{ env.GIT_COMMITTER_NAME }}
-          git status
           git commit -am "Release ${{ github.ref_name }}"
-          git log -2
-          git push
+          git push origin HEAD:${{github.ref}}
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
