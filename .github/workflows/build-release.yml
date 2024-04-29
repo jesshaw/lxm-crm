@@ -20,8 +20,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Update pom.xml version
         run: |
-          apt-get install xmlstarlet
-          version=$(xmlstarlet sel -N ns="http://maven.apache.org/POM/4.0.0" -t -v "//ns:project/ns:version" pom.xml | sed 's/-SNAPSHOT$//')
+          version=$(sed -n 's/<version>\(.*\)-SNAPSHOT<\/version>/\1/p' pom.xml | sed 's/ //g')
           sed -i "s/<version>${version}-SNAPSHOT<\/version>/<version>${version}<\/version>/" pom.xml
           echo "VERSION=${version}" >> $GITHUB_ENV
       - name: Commit changes
