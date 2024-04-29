@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lexiangmaio.crm</groupId>
-    <artifactId>lxmcrm</artifactId>    
-    <version>0.0.17-SNAPSHOT</version>
+    <artifactId>lxmcrm</artifactId>
+    <version>0.0.18-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Lxmcrm</name>
     <description>Description for Lxmcrm</description>
