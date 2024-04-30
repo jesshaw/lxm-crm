@@ -1,0 +1,83 @@
+site_name: 乐享CRM
+site_description: 一个客户关系管理系统
+repo_url: http://github.com/jesshaw/lxm-crm
+repo_name: lxm-crm
+edit_uri: edit/main/
+
+# Copyright
+copyright: Copyright &copy; 2024 - 2025 Jes Shaw
+
+theme:
+  language: 'zh'
+  favicon: assets/lxm-crm.ico
+  logo: assets/lxm-crm.png
+  name: material
+  custom_dir: docs_theme/
+  features:
+    - navigation.top
+    - navigation.tabs
+    - navigation.sections
+    # - toc.integrate # Navigation integration
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    # Light mode
+    - green: '(prefers-color-scheme: light)'
+      scheme: lexiangmiao
+      toggle:
+        icon: material/weather-night
+        name: 深色
+    # Dark mode
+    - media: '(prefers-color-scheme: dark)'
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: 浅色
+
+# extra_css:
+#   - stylesheets/extra.css
+
+extra:
+  generator: false
+  # alternate:
+  #   - name: English
+  #     link: ./en/
+  #     lang: en
+  #   - name: 中文
+  #     link: ./zh/
+  #     lang: zh
+  # search:
+  #   language: 'jp'
+  version:
+    provider: mike
+
+markdown_extensions:
+  - plantuml_markdown:
+      format: svg
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.emoji: # 表情和品牌图标支持
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list # markdown按钮样式支持, 通地属性
+  - md_in_html
+  - pymdownx.caret
+  - pymdownx.mark
+  - pymdownx.tilde
+  - footnotes
+  # - meta
+  - abbr
+  - pymdownx.snippets:
+      base_path: docs/includes
+      check_paths: true
+  - admonition
+
+plugins:
+  # 通过.pages文件来定义导航 https://github.com/lukasgeiter/mkdocs-awesome-pages-plugin
+  - awesome-pages:
+      strict: false
+  - search
+  - codeinclude:
+      title_mode: pymdownx.tabbed
+  - glightbox
