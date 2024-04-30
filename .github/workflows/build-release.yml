@@ -97,8 +97,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Print Current Directory
         run: pwd
-      # - name: Grant permission
-      #   run: git config --global --add safe.directory /__w/mynotes/mynotes
+      - name: Grant permission
+        run: git config --global --add safe.directory ${PWD}
       - name: Deploy documentation
         run: mike deploy --update-aliases --push ${{github.ref_name}} latest && mike set-default --push latest
       - name: Show version list
