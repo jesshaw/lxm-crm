@@ -14,7 +14,6 @@ env:
   GIT_COMMITTER_EMAIL: jesshaw@126.com
 jobs:
   Build-Release-Image:
-    if: false
     runs-on: ubuntu-latest
     steps:
       #https://github.com/actions/setup-java
@@ -95,8 +94,8 @@ jobs:
           ref: gh-pages
       - name: Check out repository code
         uses: actions/checkout@v4
-      - name: Print Current Directory
-        run: pwd
+      # - name: Print Current Directory
+      #   run: pwd
       - name: Grant permission
         run: git config --global --add safe.directory ${PWD}
       - name: Deploy documentation
