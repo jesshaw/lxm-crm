@@ -39,12 +39,15 @@ public class CustomPermissionEvaluatorService {
      */
     private CustomUserDetails getCurrentUser() {
         // 暂时是从DB取数，后续可优化
-        Optional<String> login = SecurityUtils.getCurrentUserLogin();
-        if (login.isPresent()) {
-            return (CustomUserDetails) domainUserDetailsService.loadUserByUsername(login.get());
-        } else {
-            throw new AccessDeniedException("No Valid User Found");
-        }
+        return SecurityUtils.getCurrentUserLogin()
+            .map(login -> (CustomUserDetails) domainUserDetailsService.loadUserByUsername(login))
+            .orElseThrow(() -> new AccessDeniedException("No Valid User Found"));
+        //        Optional<String> login = SecurityUtils.getCurrentUserLogin();
+        //        if (login.isPresent()) {
+        //            return (CustomUserDetails) domainUserDetailsService.loadUserByUsername(login.get());
+        //        } else {
+        //            throw new AccessDeniedException("No Valid User Found");
+        //        }
         //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         //        if (auth.getPrincipal() instanceof UserDetails) {
         //            return (CustomUserDetails) auth.getPrincipal();
