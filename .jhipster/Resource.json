@@ -1,0 +1,33 @@
+{
+  "annotations": {
+    "changelogDate": "20240521040136",
+    "readonly": true
+  },
+  "applications": ["lxmcrm"],
+  "documentation": "资源权限",
+  "fields": [
+    {
+      "documentation": "资原名",
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["maxlength"],
+      "fieldValidateRulesMaxlength": "100"
+    },
+    {
+      "fieldName": "permission",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Resource",
+  "relationships": [
+    {
+      "otherEntityField": "name",
+      "otherEntityName": "authority",
+      "relationshipName": "authority",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    }
+  ],
+  "searchEngine": "no"
+}

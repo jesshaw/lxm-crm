@@ -8,7 +8,8 @@
       "entities": {
         "main": "数据",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
-        "employee": "Employee"
+        "employee": "Employee",
+        "resource": "Resource"
       },
       "account": {
         "main": "账号",

@@ -3,6 +3,8 @@ package com.lexiangmaio.crm.web.rest;
 import com.lexiangmaio.crm.domain.Employee;
 import com.lexiangmaio.crm.repository.EmployeeRepository;
 import com.lexiangmaio.crm.repository.UserRepository;
+import com.lexiangmaio.crm.security.PermissionConstants;
+import com.lexiangmaio.crm.security.ResourceConstants;
 import com.lexiangmaio.crm.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -79,6 +82,7 @@ public class EmployeeResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<Employee> updateEmployee(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Employee employee

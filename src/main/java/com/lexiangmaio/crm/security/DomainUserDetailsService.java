@@ -1,9 +1,12 @@
 package com.lexiangmaio.crm.security;
 
 import com.lexiangmaio.crm.domain.Authority;
+import com.lexiangmaio.crm.domain.Resource;
 import com.lexiangmaio.crm.domain.User;
+import com.lexiangmaio.crm.repository.ResourceRepository;
 import com.lexiangmaio.crm.repository.UserRepository;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,9 +26,11 @@ public class DomainUserDetailsService implements UserDetailsService {
     private final Logger log = LoggerFactory.getLogger(DomainUserDetailsService.class);
 
     private final UserRepository userRepository;
+    private final ResourceRepository resourceRepository;
 
-    public DomainUserDetailsService(UserRepository userRepository) {
+    public DomainUserDetailsService(UserRepository userRepository, ResourceRepository resourceRepository) {
         this.userRepository = userRepository;
+        this.resourceRepository = resourceRepository;
     }
 
     @Override
@@ -51,12 +56,10 @@ public class DomainUserDetailsService implements UserDetailsService {
         if (!user.isActivated()) {
             throw new UserNotActivatedException("User " + lowercaseLogin + " was not activated");
         }
-        List<SimpleGrantedAuthority> grantedAuthorities = user
-            .getAuthorities()
-            .stream()
-            .map(Authority::getName)
-            .map(SimpleGrantedAuthority::new)
-            .toList();
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), grantedAuthorities);
+        List<String> authorityies = user.getAuthorities().stream().map(Authority::getName).toList();
+        List<SimpleGrantedAuthority> grantedAuthorities = authorityies.stream().map(SimpleGrantedAuthority::new).toList();
+        //不使用Authority中的Resources一对多的方式获取，是因为验证发现存在不确定性
+        Set<Resource> resources = new HashSet<>(resourceRepository.findAllByAuthorityNameIn(authorityies));
+        return new CustomUserDetails(user.getLogin(), user.getPassword(), grantedAuthorities, resources);
     }
 }

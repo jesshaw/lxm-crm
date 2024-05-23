@@ -51,6 +51,7 @@ public class CacheConfiguration {
             createCache(cm, com.lexiangmaio.crm.domain.Authority.class.getName());
             createCache(cm, com.lexiangmaio.crm.domain.User.class.getName() + ".authorities");
             createCache(cm, com.lexiangmaio.crm.domain.Employee.class.getName());
+            createCache(cm, com.lexiangmaio.crm.domain.Resource.class.getName());
             // jhipster-needle-ehcache-add-entry
         };
     }
