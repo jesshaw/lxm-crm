@@ -9,7 +9,8 @@
         "main": "Entities",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
         "employee": "Employee",
-        "resource": "Resource"
+        "resource": "Resource",
+        "leadInfo": "Lead Info"
       },
       "account": {
         "main": "Account",
