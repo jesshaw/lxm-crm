@@ -10,7 +10,7 @@
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
         "employee": "Employee",
         "resource": "Resource",
-        "leadInfo": "Lead Info"
+        "leadInfo": "LeadInfo"
       },
       "account": {
         "main": "Account",

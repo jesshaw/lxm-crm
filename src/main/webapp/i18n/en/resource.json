@@ -17,12 +17,12 @@
       "detail": {
         "title": "Resource"
       },
-      "id": "ID",
+      "id": "Id",
       "name": "Name",
       "permission": "Permission",
       "authority": "Authority",
       "help": {
-        "name": "资原名"
+        "name": "Name"
       }
     }
   }

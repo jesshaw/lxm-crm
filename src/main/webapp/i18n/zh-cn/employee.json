@@ -6,20 +6,20 @@
         "refreshListLabel": "刷新列表",
         "createLabel": "创建新员工",
         "createOrEditLabel": "创建或编辑员工",
-        "notFound": "No Employees found"
+        "notFound": "未找到员工"
       },
-      "created": "员工 {{ param }} 创建成功",
-      "updated": "员工 {{ param }} 更新成功",
-      "deleted": "员工 {{ param }} 删除成功",
+      "created": "员工{{ param }}创建成功",
+      "updated": "员工{{ param }}更新成功",
+      "deleted": "员工{{ param }}删除成功",
       "delete": {
-        "question": "你确定要删除员工 {{ id }} 吗？"
+        "question": "你确定要删除员工{{ id }}吗？"
       },
       "detail": {
         "title": "员工"
       },
       "id": "ID",
       "title": "职务",
-      "user": "登录用户",
+      "user": "User",
       "help": {
         "title": "职务"
       }

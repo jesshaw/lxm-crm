@@ -1,0 +1,31 @@
+{
+  "lxmcrmApp": {
+    "adminUserManagement": {
+      "home": {
+        "title": "User Managements",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new User Management",
+        "createOrEditLabel": "Create or edit a User Management",
+        "notFound": "No User Managements found"
+      },
+      "created": "A new User Management is created with identifier {{ param }}",
+      "updated": "A User Management is updated with identifier {{ param }}",
+      "deleted": "A User Management is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete User Management {{ id }}?"
+      },
+      "detail": {
+        "title": "User Management"
+      },
+      "id": "ID",
+      "login": "Login",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "imageUrl": "Image Url",
+      "activated": "Activated",
+      "langKey": "Lang Key",
+      "authority": "Authority"
+    }
+  }
+}

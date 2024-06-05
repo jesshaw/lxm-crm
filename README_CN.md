@@ -10,9 +10,12 @@ Lxm CRM-开源的客户关系管理系统
    根据您的系统，您可以从源代码或预打包包安装 Node。
 
 安装 Node 后，您应该能够运行以下命令来安装开发工具。仅当package.json
-中的依赖项发生变化时，才需要运行此命令。
+中的依赖项发生变化时，才需要运行此命令。推荐用`yarn`来管理node包，有时npm会存在内存益出的问题。
 
 ```bash
+npm install yarn -g
+yarn install
+
 npm install
 ```
 
@@ -40,3 +43,5 @@ jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --
 jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --skip-cache --skip-install  crm.jdl
 
 ```
+
+_注意_：通过命令行的对话可以记住用户的选择下次不再生成（不生成的文件存放在.yo-resolve）

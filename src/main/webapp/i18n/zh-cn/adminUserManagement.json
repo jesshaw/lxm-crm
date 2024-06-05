@@ -1,0 +1,31 @@
+{
+  "lxmcrmApp": {
+    "adminUserManagement": {
+      "home": {
+        "title": "User Managements",
+        "refreshListLabel": "刷新列表",
+        "createLabel": "创建新User Management",
+        "createOrEditLabel": "创建或编辑User Management",
+        "notFound": "未找到User Managements"
+      },
+      "created": "User Management{{ param }}创建成功",
+      "updated": "User Management{{ param }}更新成功",
+      "deleted": "User Management{{ param }}删除成功",
+      "delete": {
+        "question": "你确定要删除User Management{{ id }}吗？"
+      },
+      "detail": {
+        "title": "User Management"
+      },
+      "id": "ID",
+      "login": "Login",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "imageUrl": "Image Url",
+      "activated": "Activated",
+      "langKey": "Lang Key",
+      "authority": "Authority"
+    }
+  }
+}

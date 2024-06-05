@@ -17,7 +17,7 @@ export const Home = () => {
       </Col>
       <Col md="9">
         <h1 className="display-4">
-          <Translate contentKey="home.title">Welcome, lxm crm!</Translate>
+          <Translate contentKey="home.title">Welcome, Java Hipster!</Translate>
         </h1>
         <p className="lead">
           <Translate contentKey="home.subtitle">This is your homepage</Translate>
@@ -53,42 +53,41 @@ export const Home = () => {
             </Alert>
           </div>
         )}
-
         <p>
-          <Translate contentKey="home.question">If you have any question on lxm crm:</Translate>
+          <Translate contentKey="home.question">If you have any question on JHipster:</Translate>
         </p>
 
         <ul>
           <li>
-            <a href="https://blog.lexiangmiao.com/lxm-crm/" target="_blank" rel="noopener noreferrer">
-              <Translate contentKey="home.link.homepage">lxm crm homepage</Translate>
-            </a>
-          </li>
-          {/* <li>
-            <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">
-              <Translate contentKey="home.link.stackoverflow">lxm crm on Stack Overflow</Translate>
+            <a href="https://github.com/jesshaw/generator-jhipster-chimera" target="_blank" rel="noopener noreferrer">
+              <Translate contentKey="home.link.homepage">Chimera homepage</Translate>
             </a>
           </li>
           <li>
-            <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer">
-              <Translate contentKey="home.link.bugtracker">lxm crm bug tracker</Translate>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              <Translate contentKey="home.link.stackoverflow">Chimera on Stack Overflow</Translate>
             </a>
           </li>
           <li>
-            <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">
-              <Translate contentKey="home.link.chat">lxm crm public chat room</Translate>
+            <a href="https://github.com/jesshaw/generator-jhipster-chimera/issues?state=open" target="_blank" rel="noopener noreferrer">
+              <Translate contentKey="home.link.bugtracker">Chimera bug tracker</Translate>
             </a>
           </li>
           <li>
-            <a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">
-              <Translate contentKey="home.link.follow">follow @jhipster on Twitter</Translate>
+            <a href="" target="_blank" rel="noopener noreferrer">
+              <Translate contentKey="home.link.chat">Chimera public chat room</Translate>
             </a>
-          </li> */}
+          </li>
+          <li>
+            <a href="" target="_blank" rel="noopener noreferrer">
+              <Translate contentKey="home.link.follow">follow @Chimera on Twitter</Translate>
+            </a>
+          </li>
         </ul>
 
         <p>
-          <Translate contentKey="home.like">If you like lxm crm, do not forget to give us a star on</Translate>{' '}
-          <a href="https://github.com/jesshaw/lxm-crm" target="_blank" rel="noopener noreferrer">
+          <Translate contentKey="home.like">If you like Chimera, do not forget to give us a star on</Translate>{' '}
+          <a href="https://github.com/jesshaw/generator-jhipster-chimera" target="_blank" rel="noopener noreferrer">
             GitHub
           </a>
           !

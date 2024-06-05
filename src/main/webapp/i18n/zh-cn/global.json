@@ -8,9 +8,9 @@
       "entities": {
         "main": "数据",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
-        "employee": "Employee",
-        "resource": "Resource",
-        "leadInfo": "Lead Info"
+        "employee": "员工",
+        "resource": "资源权限",
+        "leadInfo": "潜客"
       },
       "account": {
         "main": "账号",

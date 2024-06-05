@@ -1,19 +1,19 @@
 {
   "home": {
-    "title": "欢迎, lxm crm!",
+    "title": "欢迎, lxm chimera GENERATOR!",
     "subtitle": "这里是首页",
     "logged": {
       "message": "您目前是以 \"{{username}}\" 账号登录."
     },
-    "question": "如果您有任何有关 lxm crm 的问题, 可以查阅下列资源:",
+    "question": "如果您有任何有关 lxm chimera 的问题, 可以查阅下列资源:",
     "link": {
-      "homepage": "lxm crm 首頁",
-      "stackoverflow": "Stack Overflow 上关于 lxm crm 的讨论",
-      "bugtracker": "lxm crm 的缺陷追踪",
-      "chat": "lxm crm public chat room",
-      "follow": "在 Twitter 上联络 @lxm crm"
+      "homepage": "lxm chimera 首頁",
+      "stackoverflow": "Stack Overflow 上关于 lxm chimera 的讨论",
+      "bugtracker": "lxm chimera 的缺陷追踪",
+      "chat": "lxm chimera public chat room",
+      "follow": "在 Twitter 上联络 lxm chimera"
     },
-    "like": "如果您喜欢 lxm crm, 请记得给我们加星在",
+    "like": "如果您喜欢 lxm chimera, 请记得给我们加星在",
     "github": "GitHub"
   }
 }

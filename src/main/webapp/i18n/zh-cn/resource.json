@@ -2,25 +2,25 @@
   "lxmcrmApp": {
     "resource": {
       "home": {
-        "title": "角色资源",
+        "title": "资源权限",
         "refreshListLabel": "刷新列表",
-        "createLabel": "创建新角色资源",
-        "createOrEditLabel": "创建或编辑角色资源",
-        "notFound": "No 角色资源 found"
+        "createLabel": "创建新资源权限",
+        "createOrEditLabel": "创建或编辑资源权限",
+        "notFound": "未找到资源权限"
       },
-      "created": "角色资源 {{ param }} 创建成功",
-      "updated": "角色资源 {{ param }} 更新成功",
-      "deleted": "角色资源 {{ param }} 删除成功",
+      "created": "资源权限{{ param }}创建成功",
+      "updated": "资源权限{{ param }}更新成功",
+      "deleted": "资源权限{{ param }}删除成功",
       "delete": {
-        "question": "你确定要删除 角色资源 {{ id }} 吗？"
+        "question": "你确定要删除资源权限{{ id }}吗？"
       },
       "detail": {
-        "title": "角色资源"
+        "title": "资源权限"
       },
       "id": "ID",
-      "name": "资源名",
-      "permission": "权限",
-      "authority": "角色",
+      "name": "资原名",
+      "permission": "Permission",
+      "authority": "Authority",
       "help": {
         "name": "资原名"
       }

@@ -5,6 +5,12 @@
     "authenticationType": "jwt",
     "autoCrlf": true,
     "baseName": "lxmcrm",
+    "blueprints": [
+      {
+        "name": "generator-jhipster-chimera",
+        "version": "1.0.0"
+      }
+    ],
     "buildTool": "maven",
     "cacheProvider": "ehcache",
     "clientFramework": "react",

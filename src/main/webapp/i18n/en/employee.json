@@ -17,11 +17,11 @@
       "detail": {
         "title": "Employee"
       },
-      "id": "ID",
+      "id": "Id",
       "title": "Title",
       "user": "User",
       "help": {
-        "title": "职务"
+        "title": "Title"
       }
     }
   }
