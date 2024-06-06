@@ -24,7 +24,15 @@ npm install
 在两个独立的终端中运行以下命令，以创建一个幸福的开发体验，当硬盘上的文件发生变化时，浏览器会自动刷新。
 
 ```bash
+# 推荐maven启动后端
+mvn spring-boot:run
+# 或
 ./mvnw
+
+
+# 推荐yarn启动前端
+yarn start
+# 或
 npm start
 ```
 
