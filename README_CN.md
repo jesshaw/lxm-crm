@@ -48,7 +48,13 @@ Npm 还用于管理此应用程序中使用的 CSS 和 JavaScript 依赖项。�
 ```bash
 jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --skip-install  crm.jdl
 
-jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --skip-cache --skip-install  crm.jdl
+jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-git --skip-cache --skip-install  crm.jdl
+
+jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install  crm.jdl
+
+jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-fake-data --skip-db-changelog --skip-git --skip-cache --skip-install  crm.jdl
+
+jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install --skip-fake-data --skip-db-changelog  crm.jdl
 
 ```
 
