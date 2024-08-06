@@ -59,3 +59,13 @@ jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server
 ```
 
 _注意_：通过命令行的对话可以记住用户的选择下次不再生成（不生成的文件存放在.yo-resolve）
+
+## Q&A
+
+### `moduleGraph.getParentModule(this)` 返回了 `undefined`，导致无法读取 `buildMeta` 属性
+
+更新 Webpack 和相关插件（如果有必要）
+
+```bash
+yarn add webpack webpack-cli --save-dev
+```

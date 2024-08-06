@@ -7,4 +7,4 @@ src\main\java\com\lexiangmaio\crm\domain\Resource.java skip
 src\main\webapp\app\entities\reducers.ts skip
 src\main\resources\config\liquibase\fake-data\resource.csv skip
 .gitignore skip
-package.json skip
+src\main\webapp\app\entities\reducers.ts skip

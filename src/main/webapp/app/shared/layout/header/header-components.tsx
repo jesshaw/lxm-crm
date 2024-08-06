@@ -4,10 +4,11 @@ import { Translate } from 'react-jhipster';
 import { NavItem, NavLink, NavbarBrand } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Logo from '../logo';
 
 export const BrandIcon = props => (
   <div {...props} className="brand-icon">
-    <img src="content/images/logo.png" alt="Logo" />
+    <Logo />
   </div>
 );
 

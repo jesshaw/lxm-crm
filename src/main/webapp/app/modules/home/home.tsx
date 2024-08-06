@@ -1,4 +1,4 @@
-import './home.scss';
+import './home.css';
 
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -11,11 +11,11 @@ export const Home = () => {
   const account = useAppSelector(state => state.authentication.account);
 
   return (
-    <Row>
-      <Col md="3" className="pad">
+    <div className="grid grid-cols-12 gap-1">
+      <div className="col-span-12 md:col-span-3">
         <span className="hipster rounded" />
-      </Col>
-      <Col md="9">
+      </div>
+      <div className="col-span-12 md:col-span-9">
         <h1 className="display-4">
           <Translate contentKey="home.title">Welcome, Java Hipster!</Translate>
         </h1>
@@ -92,8 +92,8 @@ export const Home = () => {
           </a>
           !
         </p>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 };
 

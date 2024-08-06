@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import { PrimeReactProvider } from 'primereact/api';
 
 import getStore from 'app/config/store';
 import { registerLocale } from 'app/config/translation';
@@ -25,11 +26,11 @@ const root = createRoot(rootEl);
 const render = Component =>
   root.render(
     <ErrorBoundary>
-      <Provider store={store}>
-        <div>
+      <PrimeReactProvider value={{ unstyled: false }}>
+        <Provider store={store}>
           <Component />
-        </div>
-      </Provider>
+        </Provider>
+      </PrimeReactProvider>
     </ErrorBoundary>,
   );
 

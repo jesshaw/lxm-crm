@@ -14,9 +14,10 @@ bracketSameLine: false
 plugins:
   - prettier-plugin-packagejson
   - prettier-plugin-java
+  - prettier-plugin-tailwindcss
 
 # java rules:
 overrides:
-  - files: "*.java"
+  - files: '*.java'
     options:
       tabWidth: 4

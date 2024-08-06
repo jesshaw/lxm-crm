@@ -12,6 +12,11 @@
         "resource": "Resource",
         "leadInfo": "LeadInfo"
       },
+      "dashboards": {
+        "title": "DASHBOARDS",
+        "ecommerce": "E-Commerce",
+        "banking": "Banking"
+      },
       "account": {
         "main": "Account",
         "settings": "Settings",
@@ -19,7 +24,15 @@
         "sessions": "Sessions",
         "login": "Sign in",
         "logout": "Sign out",
-        "register": "Register"
+        "register": "Register",
+        "settings.subtitle": "Update personal information in a timely manner",
+        "password.subtitle": "Regularly changing your password helps enhance security",
+        "logout.subtitle": "Securely log out when not in use"
+      },
+      "profile": {
+        "welcome": "Welcome",
+        "notifications": "Notifications",
+        "messages": "Messages"
       },
       "admin": {
         "main": "Administration",
@@ -32,6 +45,13 @@
         "apidocs": "API",
         "database": "Database",
         "jhipster-needle-menu-add-admin-element": "JHipster will add additional menu entries here (do not translate!)"
+      },
+      "ui": {
+        "themes": "Themes",
+        "scale": "Scale",
+        "colorScheme": "Color Scheme",
+        "colorScheme.light": "Light",
+        "colorScheme.dark": "Dark"
       },
       "language": "Language"
     },
