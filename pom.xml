@@ -26,6 +26,7 @@
         <java.version>17</java.version>
         <node.version>v20.12.1</node.version>
         <npm.version>10.5.1</npm.version>
+        <yarn.version>v1.22.22</yarn.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
@@ -396,7 +397,7 @@
                     <configuration>
                         <installDirectory>target</installDirectory>
                         <nodeVersion>${node.version}</nodeVersion>
-                        <npmVersion>${npm.version}</npmVersion>
+                        <yarnVersion>${yarn.version}</yarnVersion>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -918,8 +919,8 @@
                                                 <artifactId>frontend-maven-plugin</artifactId>
                                                 <versionRange>${frontend-maven-plugin.version}</versionRange>
                                                 <goals>
-                                                    <goal>install-node-and-npm</goal>
-                                                    <goal>npm</goal>
+                                                    <goal>install-node-and-yarn</goal>
+                                                    <goal>yarn</goal>
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
@@ -1004,21 +1005,21 @@
                         <artifactId>frontend-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-node-and-npm</id>
+                                <id>install-node-and-yarn</id>
                                 <goals>
-                                    <goal>install-node-and-npm</goal>
+                                    <goal>install-node-and-yarn</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>npm install</id>
+                                <id>yarn install</id>
                                 <goals>
-                                    <goal>npm</goal>
+                                    <goal>yarn</goal>
                                 </goals>
                             </execution>
                             <execution>
                                 <id>webapp build test</id>
                                 <goals>
-                                    <goal>npm</goal>
+                                    <goal>yarn</goal>
                                 </goals>
                                 <phase>test</phase>
                                 <configuration>
@@ -1029,7 +1030,7 @@
                             <execution>
                                 <id>webapp build prod</id>
                                 <goals>
-                                    <goal>npm</goal>
+                                    <goal>yarn</goal>
                                 </goals>
                                 <phase>generate-resources</phase>
                                 <configuration>
@@ -1160,21 +1161,21 @@
                         <artifactId>frontend-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-node-and-npm</id>
+                                <id>install-node-and-yarn</id>
                                 <goals>
-                                    <goal>install-node-and-npm</goal>
+                                    <goal>install-node-and-yarn</goal>
                                 </goals>
                             </execution>
                             <execution>
-                                <id>npm install</id>
+                                <id>yarn install</id>
                                 <goals>
-                                    <goal>npm</goal>
+                                    <goal>yarn</goal>
                                 </goals>
                             </execution>
                             <execution>
                                 <id>webapp build dev</id>
                                 <goals>
-                                    <goal>npm</goal>
+                                    <goal>yarn</goal>
                                 </goals>
                                 <phase>generate-resources</phase>
                                 <configuration>
