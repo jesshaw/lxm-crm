@@ -1,10 +1,22 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Translate, translate, ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
-import { Button, Alert, Col, Row } from 'reactstrap';
+
 import { toast } from 'react-toastify';
 
 import { handlePasswordResetInit, reset } from '../password-reset.reducer';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+
+import Bg from 'app/shared/layout/bg';
+import FullPageLayout from 'app/shared/layout/full-page-layout';
+
+import { useForm, Controller } from 'react-hook-form';
+import { IconField } from 'primereact/iconfield';
+import { InputIcon } from 'primereact/inputicon';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+
+import './password-reset-init.css';
 
 export const PasswordResetInit = () => {
   const dispatch = useAppDispatch();
@@ -16,8 +28,23 @@ export const PasswordResetInit = () => {
     [],
   );
 
-  const handleValidSubmit = ({ email }) => {
+  const navigate = useNavigate();
+  const goBack = () => {
+    navigate(-1);
+  };
+
+  const passwordResetInit = ({ email }) => {
     dispatch(handlePasswordResetInit(email));
+  };
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({ mode: 'onTouched' });
+
+  const handleValidSubmit = e => {
+    handleSubmit(passwordResetInit)(e);
   };
 
   const successMessage = useAppSelector(state => state.passwordReset.successMessage);
@@ -29,38 +56,50 @@ export const PasswordResetInit = () => {
   }, [successMessage]);
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h1>
-            <Translate contentKey="reset.request.title">Reset your password</Translate>
-          </h1>
-          <Alert color="warning">
-            <p>
+    <FullPageLayout>
+      <Bg className="fixed left-0 top-0 min-h-screen min-w-full" />
+      <div className="full-page">
+        <div className="content">
+          <form onSubmit={handleValidSubmit}>
+            <div className="title">
+              <Translate contentKey="reset.request.title">Reset your password</Translate>
+            </div>
+            <div>
               <Translate contentKey="reset.request.messages.info">Enter the email address you used to register</Translate>
-            </p>
-          </Alert>
-          <ValidatedForm onSubmit={handleValidSubmit}>
-            <ValidatedField
-              name="email"
-              label={translate('global.form.email.label')}
-              placeholder={translate('global.form.email.placeholder')}
-              type="email"
-              validate={{
-                required: { value: true, message: translate('global.messages.validate.email.required') },
-                minLength: { value: 5, message: translate('global.messages.validate.email.minlength') },
-                maxLength: { value: 254, message: translate('global.messages.validate.email.maxlength') },
-                validate: v => isEmail(v) || translate('global.messages.validate.email.invalid'),
-              }}
-              data-cy="emailResetPassword"
-            />
-            <Button color="primary" type="submit" data-cy="submit">
-              <Translate contentKey="reset.request.form.button">Reset password</Translate>
-            </Button>
-          </ValidatedForm>
-        </Col>
-      </Row>
-    </div>
+            </div>
+            <IconField iconPosition="left">
+              <InputIcon className="pi pi-envelope"> </InputIcon>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: translate('global.messages.validate.email.required'),
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // 邮箱格式正则表达式
+                    message: translate('global.messages.validate.email.invalid'), // 邮箱格式错误时的提示信息
+                  },
+                }}
+                render={({ field }) => (
+                  <>
+                    <InputText
+                      {...field}
+                      keyfilter="email"
+                      placeholder={translate('global.form.email.placeholder')}
+                      invalid={!!errors.email}
+                    />
+                    {errors.email && <span>{errors.email.message.toString()}</span>}
+                  </>
+                )}
+              />
+            </IconField>
+            <div className="footer">
+              <Button label={translate('reset.request.form.cancel')} outlined onClick={goBack} />
+              <Button label={translate('reset.request.form.button')} type="submit" />
+            </div>
+          </form>
+        </div>
+      </div>
+    </FullPageLayout>
   );
 };
 

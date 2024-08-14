@@ -3,6 +3,7 @@
     "request": {
       "title": "重置您的密码",
       "form": {
+        "cancel": "取消",
         "button": "重置密码"
       },
       "messages": {

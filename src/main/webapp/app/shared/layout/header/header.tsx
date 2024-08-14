@@ -1,19 +1,20 @@
 import './header.css';
 
-import React, { useState, Dispatch, SetStateAction, MutableRefObject } from 'react';
+import React, { useState } from 'react';
 import { Translate, Storage } from 'react-jhipster';
 import { Navbar, Nav, NavbarToggler, Collapse } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
 
 import { Home, Brand } from './header-components';
 import { AdminMenu, EntitiesMenu, AccountMenu, LocaleMenu } from '../menus';
-import { useAppDispatch } from 'app/config/store';
+import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { setLocale } from 'app/shared/reducers/locale';
 
 import MyProfile from './my-profile';
 import ThemeSelector from '../theme/theme-selector';
 import { BreadCrumb } from 'primereact/breadcrumb';
 import { InputText } from 'primereact/inputtext';
+import { setMobileLayoutStatus, setStaticLayoutStatus } from 'app/shared/reducers/ui';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -22,9 +23,6 @@ export interface IHeaderProps {
   isInProduction: boolean;
   isOpenAPIEnabled: boolean;
   currentLocale: string;
-  themeSelectorVisible: boolean;
-  setThemeSelectorVisible: Dispatch<SetStateAction<boolean>>;
-  layoutContainer: MutableRefObject<HTMLDivElement>;
 }
 
 const Header = (props: IHeaderProps) => {
@@ -47,23 +45,11 @@ const Header = (props: IHeaderProps) => {
       </div>
     ) : null;
 
-  const divLayoutConatiner = props.layoutContainer;
-  const layoutStaticInactive = 'layout-static-inactive'; //静态未激活
-  const layoutMobileActive = 'layout-mobile-active'; //手机屏幕激活
-  const blockedScroll = 'blocked-scroll';
+  const mobileLayoutActivated = useAppSelector(state => state.ui.mobileLayoutActivated);
+  const staticLayoutActivated = useAppSelector(state => state.ui.staticLayoutActivated);
   const handleMenu = () => {
-    if (divLayoutConatiner.current?.classList.contains(layoutStaticInactive)) {
-      divLayoutConatiner.current?.classList.remove(layoutStaticInactive);
-    } else {
-      divLayoutConatiner.current?.classList.add(layoutStaticInactive);
-    }
-
-    if (window.innerWidth < 992) {
-      divLayoutConatiner.current?.classList.add(layoutMobileActive);
-      document.body.classList.add(blockedScroll);
-    } else {
-      divLayoutConatiner.current?.classList.remove(layoutMobileActive);
-    }
+    dispatch(setStaticLayoutStatus(!staticLayoutActivated));
+    dispatch(setMobileLayoutStatus(!mobileLayoutActivated));
   };
 
   const toggleMenu = () => setMenuOpen(!menuOpen);
@@ -81,6 +67,7 @@ const Header = (props: IHeaderProps) => {
         </div>
       </div>
 
+      {/* old nav start */}
       {renderDevRibbon()}
       <LoadingBar className="loading-bar" />
       <Navbar data-cy="navbar" dark expand="md" fixed="top" className="jh-navbar">
@@ -98,17 +85,14 @@ const Header = (props: IHeaderProps) => {
           </Nav>
         </Collapse>
       </Navbar>
+      {/* old nav end */}
 
       <div className="topbar-end">
         <div className="topbar-search">
           <i className="pi pi-search"></i>
           <InputText placeholder="Search" className="h-8 pl-6" />
         </div>
-        <ThemeSelector
-          currentLocale={props.currentLocale}
-          visible={props.themeSelectorVisible}
-          setVisible={props.setThemeSelectorVisible}
-        />
+        <ThemeSelector currentLocale={props.currentLocale} />
         <MyProfile />
       </div>
     </div>

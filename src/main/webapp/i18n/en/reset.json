@@ -3,6 +3,7 @@
     "request": {
       "title": "Reset your password",
       "form": {
+        "cancel": "Cancel",
         "button": "Reset password"
       },
       "messages": {

@@ -4,6 +4,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { login } from 'app/shared/reducers/authentication';
 import LoginModal from './login-modal';
+import './login.css';
+import FullPageLayout from 'app/shared/layout/full-page-layout';
 
 export const Login = () => {
   const dispatch = useAppDispatch();
@@ -29,7 +31,11 @@ export const Login = () => {
   if (isAuthenticated) {
     return <Navigate to={from} replace />;
   }
-  return <LoginModal showModal={showModal} handleLogin={handleLogin} handleClose={handleClose} loginError={loginError} />;
+  return (
+    <FullPageLayout>
+      <LoginModal showModal={showModal} handleLogin={handleLogin} handleClose={handleClose} loginError={loginError} />
+    </FullPageLayout>
+  );
 };
 
 export default Login;
