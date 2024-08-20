@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Col, Row } from 'reactstrap';
 import { Translate, translate, ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
-import { toast } from 'react-toastify';
+import { toast } from 'app/shared/layout/theme/toast-manager';
 
 import { locales, languages } from 'app/config/translation';
 import { useAppDispatch, useAppSelector } from 'app/config/store';

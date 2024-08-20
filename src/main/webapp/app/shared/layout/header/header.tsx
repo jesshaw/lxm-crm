@@ -15,6 +15,7 @@ import ThemeSelector from '../theme/theme-selector';
 import { BreadCrumb } from 'primereact/breadcrumb';
 import { InputText } from 'primereact/inputtext';
 import { setMobileLayoutStatus, setStaticLayoutStatus } from 'app/shared/reducers/ui';
+import { toBreadItems } from '../menus/bread-item';
 
 export interface IHeaderProps {
   isAuthenticated: boolean;
@@ -27,8 +28,6 @@ export interface IHeaderProps {
 
 const Header = (props: IHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const breadItems = [{ label: 'Electronics' }];
-  const home = { icon: 'pi pi-home', url: '#' };
 
   const dispatch = useAppDispatch();
 
@@ -45,6 +44,7 @@ const Header = (props: IHeaderProps) => {
       </div>
     ) : null;
 
+  const breadItems = useAppSelector(state => state.ui.breadItems);
   const mobileLayoutActivated = useAppSelector(state => state.ui.mobileLayoutActivated);
   const staticLayoutActivated = useAppSelector(state => state.ui.staticLayoutActivated);
   const handleMenu = () => {
@@ -63,7 +63,7 @@ const Header = (props: IHeaderProps) => {
           <i className="pi pi-bars" />
         </button>
         <div className="topbar-breadcrumb">
-          <BreadCrumb model={breadItems} home={home} />
+          <BreadCrumb model={toBreadItems(breadItems)} />
         </div>
       </div>
 

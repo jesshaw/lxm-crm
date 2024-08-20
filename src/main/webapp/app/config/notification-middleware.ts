@@ -1,5 +1,5 @@
 import { translate } from 'react-jhipster';
-import { toast } from 'react-toastify';
+import { toast } from 'app/shared/layout/theme/toast-manager';
 import { isFulfilledAction, isRejectedAction } from 'app/shared/reducers/reducer.utils';
 import { AxiosError, AxiosHeaderValue } from 'axios';
 

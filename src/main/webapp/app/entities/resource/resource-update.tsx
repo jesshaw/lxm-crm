@@ -10,7 +10,6 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IAuthority } from 'app/shared/model/admin/authority.model';
 import { getEntities as getAuthorities } from 'app/entities/admin/authority/authority.reducer';
-import { fetchDict } from 'app/entities/dict/dict.reducer';
 import { IResource } from 'app/shared/model/resource.model';
 import { getEntity, updateEntity, createEntity, reset } from './resource.reducer';
 
@@ -22,7 +21,6 @@ export const ResourceUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
-  const dict = useAppSelector(state => state.dict.entity);
   const authorities = useAppSelector(state => state.authority.entities);
   const resourceEntity = useAppSelector(state => state.resource.entity);
   const loading = useAppSelector(state => state.resource.loading);
@@ -40,7 +38,6 @@ export const ResourceUpdate = () => {
       dispatch(getEntity(id));
     }
 
-    dispatch(fetchDict(['resource', 'permission']));
     dispatch(getAuthorities({}));
   }, []);
 
@@ -102,7 +99,7 @@ export const ResourceUpdate = () => {
                   validate={{ required: true }}
                 />
               ) : null}
-              {/* <ValidatedField
+              <ValidatedField
                 label={translate('lxmcrmApp.resource.name')}
                 id="resource-name"
                 name="name"
@@ -111,43 +108,17 @@ export const ResourceUpdate = () => {
                 validate={{
                   maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
                 }}
-              /> */}
-              <ValidatedField label={translate('lxmcrmApp.resource.name')} id="resource-name" name="name" data-cy="name" type="select">
-                <option value="" key="0" />
-                {dict.resource
-                  ? dict.resource.map(otherEntity => (
-                      <option value={otherEntity.key} key={otherEntity.key}>
-                        {otherEntity.value}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
+              />
               <UncontrolledTooltip target="nameLabel">
                 <Translate contentKey="lxmcrmApp.resource.help.name" />
               </UncontrolledTooltip>
-              {/* <ValidatedField
-                label={translate('lxmcrmApp.resource.permission')}
-                id="resource-permission"
-                name="permission"
-                data-cy="permission"
-                type="text"
-              /> */}
               <ValidatedField
                 label={translate('lxmcrmApp.resource.permission')}
                 id="resource-permission"
                 name="permission"
                 data-cy="permission"
-                type="select"
-              >
-                <option value="" key="0" />
-                {dict.permission
-                  ? dict.permission.map(otherEntity => (
-                      <option value={otherEntity.key} key={otherEntity.key}>
-                        {otherEntity.value}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
+                type="text"
+              />
               <ValidatedField
                 id="resource-authority"
                 name="authority"

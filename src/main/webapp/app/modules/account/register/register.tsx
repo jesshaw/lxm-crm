@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Translate, translate, ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
 import { Row, Col, Alert, Button } from 'reactstrap';
-import { toast } from 'react-toastify';
+import { toast } from 'app/shared/layout/theme/toast-manager';
 import { Link } from 'react-router-dom';
 
 import PasswordStrengthBar from 'app/shared/layout/password/password-strength-bar';

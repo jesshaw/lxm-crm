@@ -1,14 +1,20 @@
 import './home.css';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 import { Row, Col, Alert } from 'reactstrap';
 
-import { useAppSelector } from 'app/config/store';
+import { useAppSelector, useAppDispatch } from 'app/config/store';
+import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 
 export const Home = () => {
   const account = useAppSelector(state => state.authentication.account);
+
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem]));
+  }, []);
 
   return (
     <div className="grid grid-cols-12 gap-1">

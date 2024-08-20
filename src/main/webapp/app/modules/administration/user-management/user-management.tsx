@@ -10,6 +10,7 @@ import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.cons
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { getUsersAsAdmin, updateUser } from './user-management.reducer';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { setBreadItems, MenuItemsData } from 'app/shared/reducers/ui';
 
 export const UserManagement = () => {
   const dispatch = useAppDispatch();
@@ -20,6 +21,10 @@ export const UserManagement = () => {
   const [pagination, setPagination] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
+
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.administrationMenuItem, MenuItemsData.userManagementMenuItem]));
+  }, []);
 
   const getUsersFromProps = () => {
     dispatch(
