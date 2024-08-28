@@ -69,3 +69,7 @@ _注意_：通过命令行的对话可以记住用户的选择下次不再生成
 ```bash
 yarn add webpack webpack-cli --save-dev
 ```
+
+### 鼠标悬停Tailwind CSS智能提示不能显示
+
+Command Palette(Ctrl+Shift+p) -> Tailwind CSS: Show Output 查看日志排查解决
