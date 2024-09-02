@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { Button, UncontrolledTooltip, Row, Col } from 'reactstrap';
-import { Translate } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+// import { Button, UncontrolledTooltip, Row, Col } from 'reactstrap';
+import { Button } from 'primereact/button';
+import { Tooltip } from 'primereact/tooltip';
+import { Translate, translate } from 'react-jhipster';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
@@ -10,6 +12,7 @@ import { getEntity } from './employee.reducer';
 
 export const EmployeeDetail = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { id } = useParams<'id'>();
 
@@ -18,48 +21,58 @@ export const EmployeeDetail = () => {
   }, []);
 
   const employeeEntity = useAppSelector(state => state.employee.entity);
+
   return (
-    <Row>
-      <Col md="8">
-        <h2 data-cy="employeeDetailsHeading">
-          <Translate contentKey="lxmcrmApp.employee.detail.title">Employee</Translate>
-        </h2>
-        <dl className="jh-entity-details">
-          <dt>
-            <span id="id">
-              <Translate contentKey="global.field.id">ID</Translate>
-            </span>
-          </dt>
-          <dd>{employeeEntity.id}</dd>
-          <dt>
-            <span id="title">
-              <Translate contentKey="lxmcrmApp.employee.title">Title</Translate>
-            </span>
-            <UncontrolledTooltip target="title">
-              <Translate contentKey="lxmcrmApp.employee.help.title" />
-            </UncontrolledTooltip>
-          </dt>
-          <dd>{employeeEntity.title}</dd>
-          <dt>
+    <div className="l-card">
+      <h5>
+        <Translate contentKey="lxmcrmApp.employee.detail.title">Employee</Translate>
+      </h5>
+      <div className="l-form">
+        <div>
+          <label id="id" data-pr-position="top" data-pr-at="left+5 top-5" data-pr-tooltip="">
+            <Translate contentKey="global.field.id">ID</Translate>
+          </label>
+          <Tooltip target="#id" />
+          <div>{employeeEntity.id}</div>
+        </div>
+        <div>
+          <label id="title" data-pr-position="top" data-pr-at="left+5 top-5" data-pr-tooltip={translate('lxmcrmApp.employee.help.title')}>
+            <Translate contentKey="lxmcrmApp.employee.title">Title</Translate>
+          </label>
+          <Tooltip target="#title" />
+          <div>{employeeEntity.title}</div>
+        </div>
+        <div>
+          <label
+            id="nickName"
+            data-pr-position="top"
+            data-pr-at="left+5 top-5"
+            data-pr-tooltip={translate('lxmcrmApp.employee.help.nickName')}
+          >
+            <Translate contentKey="lxmcrmApp.employee.nickName">Nick Name</Translate>
+          </label>
+          <Tooltip target="#nickName" />
+          <div>{employeeEntity.nickName}</div>
+        </div>
+        <div>
+          <label>
             <Translate contentKey="lxmcrmApp.employee.user">User</Translate>
-          </dt>
-          <dd>{employeeEntity.user ? employeeEntity.user.login : ''}</dd>
-        </dl>
-        <Button tag={Link} to="/employee" replace color="info" data-cy="entityDetailsBackButton">
-          <FontAwesomeIcon icon="arrow-left" />{' '}
-          <span className="d-none d-md-inline">
-            <Translate contentKey="entity.action.back">Back</Translate>
-          </span>
-        </Button>
-        &nbsp;
-        <Button tag={Link} to={`/employee/${employeeEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" />{' '}
-          <span className="d-none d-md-inline">
-            <Translate contentKey="entity.action.edit">Edit</Translate>
-          </span>
-        </Button>
-      </Col>
-    </Row>
+          </label>
+          <div>{employeeEntity.user ? employeeEntity.user.login : ''}</div>
+        </div>
+        <div>
+          <label>
+            <Translate contentKey="lxmcrmApp.employee.reportsTo">Reports To</Translate>
+          </label>
+          <div>{employeeEntity.reportsTo ? employeeEntity.reportsTo.nickName : ''}</div>
+        </div>
+      </div>
+
+      <div className="l-form-footer">
+        <Button label={translate('entity.action.back')} icon="pi pi-arrow-left" outlined onClick={() => navigate(-1)} />
+        <Button label={translate('entity.action.edit')} icon="pi pi-save" onClick={() => navigate(`/employee/${employeeEntity.id}/edit`)} />
+      </div>
+    </div>
   );
 };
 

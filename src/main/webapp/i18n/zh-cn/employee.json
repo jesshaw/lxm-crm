@@ -19,9 +19,14 @@
       },
       "id": "ID",
       "title": "职务",
-      "user": "User",
+      "nickName": "昵称",
+      "user": "登录用户",
+      "reportsTo": "汇报",
       "help": {
-        "title": "职务"
+        "title": "职务",
+        "nickName": "昵称",
+        "user": "登录用户",
+        "reportsTo": "汇报"
       }
     }
   }

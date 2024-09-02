@@ -18,7 +18,6 @@
         "title": "LeadInfo"
       },
       "id": "Id",
-      "description": "Description",
       "salutation": "Salutation",
       "firstName": "FirstName",
       "lastName": "LastName",
@@ -52,10 +51,10 @@
       "status": "Status",
       "statusDescription": "StatusDescription",
       "birthdate": "Birthdate",
+      "description": "Description",
       "reportsTo": "Reports To",
       "assignedUser": "Assigned User",
       "help": {
-        "description": "Description",
         "salutation": "Salutation",
         "firstName": "FirstName",
         "lastName": "LastName",
@@ -88,7 +87,10 @@
         "leadSourceDescription": "LeadSourceDescription",
         "status": "Status",
         "statusDescription": "StatusDescription",
-        "birthdate": "Birthdate"
+        "birthdate": "Birthdate",
+        "description": "Description",
+        "reportsTo": "Reports To",
+        "assignedUser": "Assigned User"
       }
     }
   }

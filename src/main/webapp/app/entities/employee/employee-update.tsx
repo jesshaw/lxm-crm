@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText, UncontrolledTooltip } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { Button, Row, Col, FormText, UncontrolledTooltip, } from 'reactstrap';
+import { isNumber, Translate, translate, TranslatorContext, ValidatedField, ValidatedForm } from 'react-jhipster';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useForm, Controller } from 'react-hook-form';
+import { InputNumber } from 'primereact/inputnumber';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { Calendar } from 'primereact/calendar';
+import { InputSwitch } from 'primereact/inputswitch';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { classNames } from 'primereact/utils';
+import dayjs from 'dayjs';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -10,8 +20,9 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IUser } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
-import { IEmployee } from 'app/shared/model/employee.model';
-import { getEntity, updateEntity, createEntity, reset } from './employee.reducer';
+import { getEntities as getEmployees } from 'app/entities/employee/employee.reducer';
+import { IEmployee, defaultValue } from 'app/shared/model/employee.model';
+import { getEntity, updateEntity, createEntity, reset as resetEntity } from './employee.reducer';
 
 export const EmployeeUpdate = () => {
   const dispatch = useAppDispatch();
@@ -22,6 +33,7 @@ export const EmployeeUpdate = () => {
   const isNew = id === undefined;
 
   const users = useAppSelector(state => state.userManagement.users);
+  const employees = useAppSelector(state => state.employee.entities);
   const employeeEntity = useAppSelector(state => state.employee.entity);
   const loading = useAppSelector(state => state.employee.loading);
   const updating = useAppSelector(state => state.employee.updating);
@@ -33,12 +45,13 @@ export const EmployeeUpdate = () => {
 
   useEffect(() => {
     if (isNew) {
-      dispatch(reset());
+      dispatch(resetEntity());
     } else {
       dispatch(getEntity(id));
     }
 
     dispatch(getUsers({}));
+    dispatch(getEmployees({}));
   }, []);
 
   useEffect(() => {
@@ -47,98 +60,193 @@ export const EmployeeUpdate = () => {
     }
   }, [updateSuccess]);
 
-  // eslint-disable-next-line complexity
-  const saveEntity = values => {
-    if (values.id !== undefined && typeof values.id !== 'number') {
-      values.id = Number(values.id);
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    trigger,
+  } = useForm({
+    defaultValues: defaultValue,
+  });
+
+  useEffect(() => {
+    if (employeeEntity) {
+      // aync data update the form
+      reset(employeeEntity);
     }
+  }, [employeeEntity, reset, TranslatorContext.context.locale]);
 
-    const entity = {
-      ...employeeEntity,
-      ...values,
-      user: users.find(it => it.id.toString() === values.user?.toString()),
-    };
-
+  const onSubmit = data => {
+    // console.log('submit data:', data);
     if (isNew) {
-      dispatch(createEntity(entity));
+      dispatch(createEntity(data));
     } else {
-      dispatch(updateEntity(entity));
+      dispatch(updateEntity(data));
     }
+
+    reset();
   };
 
-  const defaultValues = () =>
-    isNew
-      ? {}
-      : {
-          ...employeeEntity,
-          user: employeeEntity?.user?.id,
-        };
+  const getFormErrorMessage = name => {
+    return errors[name] && <small className="p-error">{errors[name].message}</small>;
+  };
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h2 id="lxmcrmApp.employee.home.createOrEditLabel" data-cy="EmployeeCreateUpdateHeading">
+    <div className="l-card">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <h5>
             <Translate contentKey="lxmcrmApp.employee.home.createOrEditLabel">Create or edit a Employee</Translate>
-          </h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="employee-id"
-                  label={translate('global.field.id')}
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField
-                label={translate('lxmcrmApp.employee.title')}
-                id="employee-title"
-                name="title"
-                data-cy="title"
-                type="text"
-                validate={{
-                  maxLength: { value: 50, message: translate('entity.validation.maxlength', { max: 50 }) },
-                }}
-              />
-              <UncontrolledTooltip target="titleLabel">
-                <Translate contentKey="lxmcrmApp.employee.help.title" />
-              </UncontrolledTooltip>
-              <ValidatedField id="employee-user" name="user" data-cy="user" label={translate('lxmcrmApp.employee.user')} type="select">
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/employee" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Back</Translate>
-                </span>
-              </Button>
-              &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp;
-                <Translate contentKey="entity.action.save">Save</Translate>
-              </Button>
-            </ValidatedForm>
-          )}
-        </Col>
-      </Row>
+          </h5>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="l-form">
+              {!isNew && (
+                <div>
+                  <label htmlFor="id">
+                    <Translate contentKey="global.field.id" />
+                  </label>
+                  <div>
+                    <Controller
+                      control={control}
+                      name="id"
+                      render={({ field }) => (
+                        <InputNumber id={field.name} onChange={e => field.onChange(e.value)} value={field.value} disabled />
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <label htmlFor="title">
+                  <Translate contentKey="lxmcrmApp.employee.title" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="title"
+                    rules={{
+                      maxLength: { value: 50, message: translate('entity.validation.maxlength', { max: 50 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('title');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.employee.help.title')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('title')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="nickName">
+                  <Translate contentKey="lxmcrmApp.employee.nickName" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="nickName"
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('nickName');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.employee.help.nickName')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('nickName')}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="user">
+                  <Translate contentKey="lxmcrmApp.employee.user" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="user"
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field?.value?.id}
+                        onChange={e => field.onChange(users.find(it => it.id === e.value))}
+                        options={users}
+                        optionValue="id"
+                        optionLabel="login"
+                        showClear
+                        onBlur={() => {
+                          trigger('user');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.employee.help.user')}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="reportsTo">
+                  <Translate contentKey="lxmcrmApp.employee.reportsTo" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="reportsTo"
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field?.value?.id}
+                        onChange={e => field.onChange(employees.find(it => it.id === e.value))}
+                        options={employees}
+                        optionValue="id"
+                        optionLabel="nickName"
+                        showClear
+                        onBlur={() => {
+                          trigger('reportsTo');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.employee.help.reportsTo')}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="l-form-footer">
+              <Button type="button" label={translate('entity.action.back')} icon="pi pi-arrow-left" outlined onClick={() => navigate(-1)} />
+              <Button type="submit" label={translate('entity.action.save')} icon="pi pi-save" disabled={updating} />
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };

@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText, UncontrolledTooltip } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { Button, Row, Col, FormText, UncontrolledTooltip, } from 'reactstrap';
+import { isNumber, Translate, translate, TranslatorContext, ValidatedField, ValidatedForm } from 'react-jhipster';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useForm, Controller } from 'react-hook-form';
+import { InputNumber } from 'primereact/inputnumber';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { Calendar } from 'primereact/calendar';
+import { InputSwitch } from 'primereact/inputswitch';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { classNames } from 'primereact/utils';
+import dayjs from 'dayjs';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -10,8 +20,8 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { IAuthority } from 'app/shared/model/admin/authority.model';
 import { getEntities as getAuthorities } from 'app/entities/admin/authority/authority.reducer';
-import { IResource } from 'app/shared/model/resource.model';
-import { getEntity, updateEntity, createEntity, reset } from './resource.reducer';
+import { IResource, defaultValue } from 'app/shared/model/resource.model';
+import { getEntity, updateEntity, createEntity, reset as resetEntity } from './resource.reducer';
 
 export const ResourceUpdate = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +43,7 @@ export const ResourceUpdate = () => {
 
   useEffect(() => {
     if (isNew) {
-      dispatch(reset());
+      dispatch(resetEntity());
     } else {
       dispatch(getEntity(id));
     }
@@ -47,111 +57,163 @@ export const ResourceUpdate = () => {
     }
   }, [updateSuccess]);
 
-  // eslint-disable-next-line complexity
-  const saveEntity = values => {
-    if (values.id !== undefined && typeof values.id !== 'number') {
-      values.id = Number(values.id);
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    trigger,
+  } = useForm({
+    defaultValues: defaultValue,
+  });
+
+  useEffect(() => {
+    if (resourceEntity) {
+      // aync data update the form
+      reset(resourceEntity);
     }
+  }, [resourceEntity, reset, TranslatorContext.context.locale]);
 
-    const entity = {
-      ...resourceEntity,
-      ...values,
-      authority: authorities.find(it => it.name.toString() === values.authority?.toString()),
-    };
-
+  const onSubmit = data => {
+    // console.log('submit data:', data);
     if (isNew) {
-      dispatch(createEntity(entity));
+      dispatch(createEntity(data));
     } else {
-      dispatch(updateEntity(entity));
+      dispatch(updateEntity(data));
     }
+
+    reset();
   };
 
-  const defaultValues = () =>
-    isNew
-      ? {}
-      : {
-          ...resourceEntity,
-          authority: resourceEntity?.authority?.name,
-        };
+  const getFormErrorMessage = name => {
+    return errors[name] && <small className="p-error">{errors[name].message}</small>;
+  };
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h2 id="lxmcrmApp.resource.home.createOrEditLabel" data-cy="ResourceCreateUpdateHeading">
+    <div className="l-card">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <h5>
             <Translate contentKey="lxmcrmApp.resource.home.createOrEditLabel">Create or edit a Resource</Translate>
-          </h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="resource-id"
-                  label={translate('global.field.id')}
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField
-                label={translate('lxmcrmApp.resource.name')}
-                id="resource-name"
-                name="name"
-                data-cy="name"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="nameLabel">
-                <Translate contentKey="lxmcrmApp.resource.help.name" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.resource.permission')}
-                id="resource-permission"
-                name="permission"
-                data-cy="permission"
-                type="text"
-              />
-              <ValidatedField
-                id="resource-authority"
-                name="authority"
-                data-cy="authority"
-                label={translate('lxmcrmApp.resource.authority')}
-                type="select"
-              >
-                <option value="" key="0" />
-                {authorities
-                  ? authorities.map(otherEntity => (
-                      <option value={otherEntity.name} key={otherEntity.name}>
-                        {otherEntity.name}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/resource" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Back</Translate>
-                </span>
-              </Button>
-              &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp;
-                <Translate contentKey="entity.action.save">Save</Translate>
-              </Button>
-            </ValidatedForm>
-          )}
-        </Col>
-      </Row>
+          </h5>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="l-form">
+              {!isNew && (
+                <div>
+                  <label htmlFor="id">
+                    <Translate contentKey="global.field.id" />
+                  </label>
+                  <div>
+                    <Controller
+                      control={control}
+                      name="id"
+                      render={({ field }) => (
+                        <InputNumber id={field.name} onChange={e => field.onChange(e.value)} value={field.value} disabled />
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <label htmlFor="name">
+                  <Translate contentKey="lxmcrmApp.resource.name" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="name"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('name');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.resource.help.name')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('name')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="permission">
+                  <Translate contentKey="lxmcrmApp.resource.permission" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="permission"
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('permission');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.resource.help.permission')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('permission')}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="authority">
+                  <Translate contentKey="lxmcrmApp.resource.authority" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="authority"
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field?.value?.name}
+                        onChange={e => field.onChange(authorities.find(it => it.name === e.value))}
+                        options={authorities}
+                        optionValue="name"
+                        optionLabel="name"
+                        showClear
+                        onBlur={() => {
+                          trigger('authority');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.resource.help.authority')}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="l-form-footer">
+              <Button type="button" label={translate('entity.action.back')} icon="pi pi-arrow-left" outlined onClick={() => navigate(-1)} />
+              <Button type="submit" label={translate('entity.action.save')} icon="pi pi-save" disabled={updating} />
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };

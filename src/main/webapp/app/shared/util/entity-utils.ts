@@ -9,7 +9,7 @@ import { IPaginationBaseState, ISortBaseState } from 'react-jhipster';
  * @param entity Object to clean.
  */
 export const cleanEntity = entity => {
-  const keysToKeep = Object.keys(entity).filter(k => !(entity[k] instanceof Object) || (entity[k]['id'] !== '' && entity[k]['id'] !== -1));
+  const keysToKeep = Object.keys(entity).filter(k => !(entity[k] instanceof Object) || (entity[k].id !== '' && entity[k].id !== -1));
 
   return pick(entity, keysToKeep);
 };
@@ -41,6 +41,10 @@ export const overridePaginationStateWithQueryParams = (paginationBaseState: IPag
   const page = params.get('page');
   if (page) {
     sortedPaginationState.activePage = +page;
+  }
+  const size = params.get('size');
+  if (size) {
+    sortedPaginationState.itemsPerPage = parseInt(size);
   }
   return sortedPaginationState;
 };

@@ -1,8 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Row, Col, FormText, UncontrolledTooltip } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { Button, Row, Col, FormText, UncontrolledTooltip, } from 'reactstrap';
+import { isNumber, Translate, translate, TranslatorContext, ValidatedField, ValidatedForm } from 'react-jhipster';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useForm, Controller } from 'react-hook-form';
+import { InputNumber } from 'primereact/inputnumber';
+import { InputText } from 'primereact/inputtext';
+import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { Calendar } from 'primereact/calendar';
+import { InputSwitch } from 'primereact/inputswitch';
+import { InputTextarea } from 'primereact/inputtextarea';
+import { classNames } from 'primereact/utils';
+import dayjs from 'dayjs';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { mapIdList } from 'app/shared/util/entity-utils';
@@ -11,8 +21,8 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities as getLeadInfos } from 'app/entities/lead-info/lead-info.reducer';
 import { IUser } from 'app/shared/model/user.model';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
-import { ILeadInfo } from 'app/shared/model/lead-info.model';
-import { getEntity, updateEntity, createEntity, reset } from './lead-info.reducer';
+import { ILeadInfo, defaultValue } from 'app/shared/model/lead-info.model';
+import { getEntity, updateEntity, createEntity, reset as resetEntity } from './lead-info.reducer';
 
 export const LeadInfoUpdate = () => {
   const dispatch = useAppDispatch();
@@ -35,7 +45,7 @@ export const LeadInfoUpdate = () => {
 
   useEffect(() => {
     if (isNew) {
-      dispatch(reset());
+      dispatch(resetEntity());
     } else {
       dispatch(getEntity(id));
     }
@@ -50,538 +60,1148 @@ export const LeadInfoUpdate = () => {
     }
   }, [updateSuccess]);
 
-  // eslint-disable-next-line complexity
-  const saveEntity = values => {
-    if (values.id !== undefined && typeof values.id !== 'number') {
-      values.id = Number(values.id);
+  const {
+    control,
+    formState: { errors },
+    handleSubmit,
+    reset,
+    trigger,
+  } = useForm({
+    defaultValues: defaultValue,
+  });
+
+  useEffect(() => {
+    if (leadInfoEntity) {
+      // aync data update the form
+      reset(leadInfoEntity);
     }
+  }, [leadInfoEntity, reset, TranslatorContext.context.locale]);
 
-    const entity = {
-      ...leadInfoEntity,
-      ...values,
-      reportsTo: leadInfos.find(it => it.id.toString() === values.reportsTo?.toString()),
-      assignedUser: users.find(it => it.id.toString() === values.assignedUser?.toString()),
-    };
-
+  const onSubmit = data => {
+    // console.log('submit data:', data);
     if (isNew) {
-      dispatch(createEntity(entity));
+      dispatch(createEntity(data));
     } else {
-      dispatch(updateEntity(entity));
+      dispatch(updateEntity(data));
     }
+
+    reset();
   };
 
-  const defaultValues = () =>
-    isNew
-      ? {}
-      : {
-          ...leadInfoEntity,
-          reportsTo: leadInfoEntity?.reportsTo?.id,
-          assignedUser: leadInfoEntity?.assignedUser?.id,
-        };
+  const getFormErrorMessage = name => {
+    return errors[name] && <small className="p-error">{errors[name].message}</small>;
+  };
 
   return (
-    <div>
-      <Row className="justify-content-center">
-        <Col md="8">
-          <h2 id="lxmcrmApp.leadInfo.home.createOrEditLabel" data-cy="LeadInfoCreateUpdateHeading">
+    <div className="l-card">
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <h5>
             <Translate contentKey="lxmcrmApp.leadInfo.home.createOrEditLabel">Create or edit a LeadInfo</Translate>
-          </h2>
-        </Col>
-      </Row>
-      <Row className="justify-content-center">
-        <Col md="8">
-          {loading ? (
-            <p>Loading...</p>
-          ) : (
-            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
-              {!isNew ? (
-                <ValidatedField
-                  name="id"
-                  required
-                  readOnly
-                  id="lead-info-id"
-                  label={translate('global.field.id')}
-                  validate={{ required: true }}
-                />
-              ) : null}
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.description')}
-                id="lead-info-description"
-                name="description"
-                data-cy="description"
-                type="textarea"
-              />
-              <UncontrolledTooltip target="descriptionLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.description" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.salutation')}
-                id="lead-info-salutation"
-                name="salutation"
-                data-cy="salutation"
-                type="text"
-                validate={{
-                  maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
-                }}
-              />
-              <UncontrolledTooltip target="salutationLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.salutation" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.firstName')}
-                id="lead-info-firstName"
-                name="firstName"
-                data-cy="firstName"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="firstNameLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.firstName" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.lastName')}
-                id="lead-info-lastName"
-                name="lastName"
-                data-cy="lastName"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="lastNameLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.lastName" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.title')}
-                id="lead-info-title"
-                name="title"
-                data-cy="title"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="titleLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.title" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.department')}
-                id="lead-info-department"
-                name="department"
-                data-cy="department"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="departmentLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.department" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.doNotCall')}
-                id="lead-info-doNotCall"
-                name="doNotCall"
-                data-cy="doNotCall"
-                check
-                type="checkbox"
-              />
-              <UncontrolledTooltip target="doNotCallLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.doNotCall" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.phoneHome')}
-                id="lead-info-phoneHome"
-                name="phoneHome"
-                data-cy="phoneHome"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="phoneHomeLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.phoneHome" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.phoneMobile')}
-                id="lead-info-phoneMobile"
-                name="phoneMobile"
-                data-cy="phoneMobile"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="phoneMobileLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.phoneMobile" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.phoneWork')}
-                id="lead-info-phoneWork"
-                name="phoneWork"
-                data-cy="phoneWork"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="phoneWorkLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.phoneWork" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.phoneOther')}
-                id="lead-info-phoneOther"
-                name="phoneOther"
-                data-cy="phoneOther"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="phoneOtherLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.phoneOther" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.phoneFax')}
-                id="lead-info-phoneFax"
-                name="phoneFax"
-                data-cy="phoneFax"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="phoneFaxLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.phoneFax" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.dateReviewed')}
-                id="lead-info-dateReviewed"
-                name="dateReviewed"
-                data-cy="dateReviewed"
-                type="date"
-              />
-              <UncontrolledTooltip target="dateReviewedLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.dateReviewed" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.lawfulBasis')}
-                id="lead-info-lawfulBasis"
-                name="lawfulBasis"
-                data-cy="lawfulBasis"
-                type="text"
-                validate={{
-                  maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
-                }}
-              />
-              <UncontrolledTooltip target="lawfulBasisLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.lawfulBasis" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.lawfulBasisSource')}
-                id="lead-info-lawfulBasisSource"
-                name="lawfulBasisSource"
-                data-cy="lawfulBasisSource"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="lawfulBasisSourceLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.lawfulBasisSource" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.primaryAddressStreet')}
-                id="lead-info-primaryAddressStreet"
-                name="primaryAddressStreet"
-                data-cy="primaryAddressStreet"
-                type="text"
-                validate={{
-                  maxLength: { value: 150, message: translate('entity.validation.maxlength', { max: 150 }) },
-                }}
-              />
-              <UncontrolledTooltip target="primaryAddressStreetLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.primaryAddressStreet" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.primaryAddressCity')}
-                id="lead-info-primaryAddressCity"
-                name="primaryAddressCity"
-                data-cy="primaryAddressCity"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="primaryAddressCityLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.primaryAddressCity" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.primaryAddressState')}
-                id="lead-info-primaryAddressState"
-                name="primaryAddressState"
-                data-cy="primaryAddressState"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="primaryAddressStateLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.primaryAddressState" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.primaryAddressPostalcode')}
-                id="lead-info-primaryAddressPostalcode"
-                name="primaryAddressPostalcode"
-                data-cy="primaryAddressPostalcode"
-                type="text"
-                validate={{
-                  maxLength: { value: 20, message: translate('entity.validation.maxlength', { max: 20 }) },
-                }}
-              />
-              <UncontrolledTooltip target="primaryAddressPostalcodeLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.primaryAddressPostalcode" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.primaryAddressCountry')}
-                id="lead-info-primaryAddressCountry"
-                name="primaryAddressCountry"
-                data-cy="primaryAddressCountry"
-                type="text"
-                validate={{
-                  maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
-                }}
-              />
-              <UncontrolledTooltip target="primaryAddressCountryLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.primaryAddressCountry" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.altAddressStreet')}
-                id="lead-info-altAddressStreet"
-                name="altAddressStreet"
-                data-cy="altAddressStreet"
-                type="text"
-                validate={{
-                  maxLength: { value: 150, message: translate('entity.validation.maxlength', { max: 150 }) },
-                }}
-              />
-              <UncontrolledTooltip target="altAddressStreetLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.altAddressStreet" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.altAddressCity')}
-                id="lead-info-altAddressCity"
-                name="altAddressCity"
-                data-cy="altAddressCity"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="altAddressCityLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.altAddressCity" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.altAddressState')}
-                id="lead-info-altAddressState"
-                name="altAddressState"
-                data-cy="altAddressState"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="altAddressStateLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.altAddressState" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.altAddressPostalcode')}
-                id="lead-info-altAddressPostalcode"
-                name="altAddressPostalcode"
-                data-cy="altAddressPostalcode"
-                type="text"
-                validate={{
-                  maxLength: { value: 20, message: translate('entity.validation.maxlength', { max: 20 }) },
-                }}
-              />
-              <UncontrolledTooltip target="altAddressPostalcodeLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.altAddressPostalcode" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.altAddressCountry')}
-                id="lead-info-altAddressCountry"
-                name="altAddressCountry"
-                data-cy="altAddressCountry"
-                type="text"
-                validate={{
-                  maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
-                }}
-              />
-              <UncontrolledTooltip target="altAddressCountryLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.altAddressCountry" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.assistant')}
-                id="lead-info-assistant"
-                name="assistant"
-                data-cy="assistant"
-                type="text"
-                validate={{
-                  maxLength: { value: 75, message: translate('entity.validation.maxlength', { max: 75 }) },
-                }}
-              />
-              <UncontrolledTooltip target="assistantLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.assistant" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.assistantPhone')}
-                id="lead-info-assistantPhone"
-                name="assistantPhone"
-                data-cy="assistantPhone"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="assistantPhoneLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.assistantPhone" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.converted')}
-                id="lead-info-converted"
-                name="converted"
-                data-cy="converted"
-                check
-                type="checkbox"
-              />
-              <UncontrolledTooltip target="convertedLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.converted" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.referedBy')}
-                id="lead-info-referedBy"
-                name="referedBy"
-                data-cy="referedBy"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="referedByLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.referedBy" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.leadSource')}
-                id="lead-info-leadSource"
-                name="leadSource"
-                data-cy="leadSource"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="leadSourceLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.leadSource" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.leadSourceDescription')}
-                id="lead-info-leadSourceDescription"
-                name="leadSourceDescription"
-                data-cy="leadSourceDescription"
-                type="text"
-                validate={{
-                  maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
-                }}
-              />
-              <UncontrolledTooltip target="leadSourceDescriptionLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.leadSourceDescription" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.status')}
-                id="lead-info-status"
-                name="status"
-                data-cy="status"
-                type="text"
-                validate={{
-                  maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
-                }}
-              />
-              <UncontrolledTooltip target="statusLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.status" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.statusDescription')}
-                id="lead-info-statusDescription"
-                name="statusDescription"
-                data-cy="statusDescription"
-                type="text"
-                validate={{
-                  maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
-                }}
-              />
-              <UncontrolledTooltip target="statusDescriptionLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.statusDescription" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                label={translate('lxmcrmApp.leadInfo.birthdate')}
-                id="lead-info-birthdate"
-                name="birthdate"
-                data-cy="birthdate"
-                type="date"
-              />
-              <UncontrolledTooltip target="birthdateLabel">
-                <Translate contentKey="lxmcrmApp.leadInfo.help.birthdate" />
-              </UncontrolledTooltip>
-              <ValidatedField
-                id="lead-info-reportsTo"
-                name="reportsTo"
-                data-cy="reportsTo"
-                label={translate('lxmcrmApp.leadInfo.reportsTo')}
-                type="select"
-              >
-                <option value="" key="0" />
-                {leadInfos
-                  ? leadInfos.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.lastName}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <ValidatedField
-                id="lead-info-assignedUser"
-                name="assignedUser"
-                data-cy="assignedUser"
-                label={translate('lxmcrmApp.leadInfo.assignedUser')}
-                type="select"
-              >
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/lead-info" replace color="info">
-                <FontAwesomeIcon icon="arrow-left" />
-                &nbsp;
-                <span className="d-none d-md-inline">
-                  <Translate contentKey="entity.action.back">Back</Translate>
-                </span>
-              </Button>
-              &nbsp;
-              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
-                <FontAwesomeIcon icon="save" />
-                &nbsp;
-                <Translate contentKey="entity.action.save">Save</Translate>
-              </Button>
-            </ValidatedForm>
-          )}
-        </Col>
-      </Row>
+          </h5>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="l-form">
+              {!isNew && (
+                <div>
+                  <label htmlFor="id">
+                    <Translate contentKey="global.field.id" />
+                  </label>
+                  <div>
+                    <Controller
+                      control={control}
+                      name="id"
+                      render={({ field }) => (
+                        <InputNumber id={field.name} onChange={e => field.onChange(e.value)} value={field.value} disabled />
+                      )}
+                    />
+                  </div>
+                </div>
+              )}
+              <div>
+                <label htmlFor="salutation">
+                  <Translate contentKey="lxmcrmApp.leadInfo.salutation" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="salutation"
+                    rules={{
+                      maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('salutation');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.salutation')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('salutation')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="firstName">
+                  <Translate contentKey="lxmcrmApp.leadInfo.firstName" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="firstName"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('firstName');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.firstName')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('firstName')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="lastName">
+                  <Translate contentKey="lxmcrmApp.leadInfo.lastName" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="lastName"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('lastName');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.lastName')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('lastName')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="title">
+                  <Translate contentKey="lxmcrmApp.leadInfo.title" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="title"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('title');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.title')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('title')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="department">
+                  <Translate contentKey="lxmcrmApp.leadInfo.department" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="department"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('department');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.department')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('department')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="doNotCall">
+                  <Translate contentKey="lxmcrmApp.leadInfo.doNotCall" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="doNotCall"
+                    render={({ field, fieldState }) => (
+                      <InputSwitch
+                        id={field.name}
+                        onChange={e => field.onChange(e.value)}
+                        checked={field.value}
+                        onBlur={() => {
+                          trigger('doNotCall');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.doNotCall')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('doNotCall')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="phoneHome">
+                  <Translate contentKey="lxmcrmApp.leadInfo.phoneHome" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="phoneHome"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('phoneHome');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.phoneHome')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('phoneHome')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="phoneMobile">
+                  <Translate contentKey="lxmcrmApp.leadInfo.phoneMobile" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="phoneMobile"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('phoneMobile');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.phoneMobile')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('phoneMobile')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="phoneWork">
+                  <Translate contentKey="lxmcrmApp.leadInfo.phoneWork" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="phoneWork"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('phoneWork');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.phoneWork')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('phoneWork')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="phoneOther">
+                  <Translate contentKey="lxmcrmApp.leadInfo.phoneOther" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="phoneOther"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('phoneOther');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.phoneOther')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('phoneOther')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="phoneFax">
+                  <Translate contentKey="lxmcrmApp.leadInfo.phoneFax" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="phoneFax"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('phoneFax');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.phoneFax')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('phoneFax')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="dateReviewed">
+                  <Translate contentKey="lxmcrmApp.leadInfo.dateReviewed" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="dateReviewed"
+                    render={({ field, fieldState }) => (
+                      <Calendar
+                        id={field.name}
+                        onChange={e => field.onChange(e.value)}
+                        value={field.value ? dayjs(convertDateTimeFromServer(field.value)).toDate() : null}
+                        dateFormat="yy-mm-dd"
+                        mask="9999-99-99"
+                        showIcon
+                        onBlur={() => {
+                          trigger('dateReviewed');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.dateReviewed')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('dateReviewed')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="lawfulBasis">
+                  <Translate contentKey="lxmcrmApp.leadInfo.lawfulBasis" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="lawfulBasis"
+                    rules={{
+                      maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('lawfulBasis');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.lawfulBasis')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('lawfulBasis')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="lawfulBasisSource">
+                  <Translate contentKey="lxmcrmApp.leadInfo.lawfulBasisSource" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="lawfulBasisSource"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('lawfulBasisSource');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.lawfulBasisSource')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('lawfulBasisSource')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="primaryAddressStreet">
+                  <Translate contentKey="lxmcrmApp.leadInfo.primaryAddressStreet" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="primaryAddressStreet"
+                    rules={{
+                      maxLength: { value: 150, message: translate('entity.validation.maxlength', { max: 150 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('primaryAddressStreet');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.primaryAddressStreet')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('primaryAddressStreet')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="primaryAddressCity">
+                  <Translate contentKey="lxmcrmApp.leadInfo.primaryAddressCity" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="primaryAddressCity"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('primaryAddressCity');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.primaryAddressCity')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('primaryAddressCity')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="primaryAddressState">
+                  <Translate contentKey="lxmcrmApp.leadInfo.primaryAddressState" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="primaryAddressState"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('primaryAddressState');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.primaryAddressState')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('primaryAddressState')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="primaryAddressPostalcode">
+                  <Translate contentKey="lxmcrmApp.leadInfo.primaryAddressPostalcode" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="primaryAddressPostalcode"
+                    rules={{
+                      maxLength: { value: 20, message: translate('entity.validation.maxlength', { max: 20 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('primaryAddressPostalcode');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.primaryAddressPostalcode')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('primaryAddressPostalcode')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="primaryAddressCountry">
+                  <Translate contentKey="lxmcrmApp.leadInfo.primaryAddressCountry" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="primaryAddressCountry"
+                    rules={{
+                      maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('primaryAddressCountry');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.primaryAddressCountry')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('primaryAddressCountry')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="altAddressStreet">
+                  <Translate contentKey="lxmcrmApp.leadInfo.altAddressStreet" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="altAddressStreet"
+                    rules={{
+                      maxLength: { value: 150, message: translate('entity.validation.maxlength', { max: 150 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('altAddressStreet');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.altAddressStreet')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('altAddressStreet')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="altAddressCity">
+                  <Translate contentKey="lxmcrmApp.leadInfo.altAddressCity" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="altAddressCity"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('altAddressCity');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.altAddressCity')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('altAddressCity')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="altAddressState">
+                  <Translate contentKey="lxmcrmApp.leadInfo.altAddressState" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="altAddressState"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('altAddressState');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.altAddressState')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('altAddressState')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="altAddressPostalcode">
+                  <Translate contentKey="lxmcrmApp.leadInfo.altAddressPostalcode" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="altAddressPostalcode"
+                    rules={{
+                      maxLength: { value: 20, message: translate('entity.validation.maxlength', { max: 20 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('altAddressPostalcode');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.altAddressPostalcode')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('altAddressPostalcode')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="altAddressCountry">
+                  <Translate contentKey="lxmcrmApp.leadInfo.altAddressCountry" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="altAddressCountry"
+                    rules={{
+                      maxLength: { value: 255, message: translate('entity.validation.maxlength', { max: 255 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('altAddressCountry');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.altAddressCountry')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('altAddressCountry')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="assistant">
+                  <Translate contentKey="lxmcrmApp.leadInfo.assistant" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="assistant"
+                    rules={{
+                      maxLength: { value: 75, message: translate('entity.validation.maxlength', { max: 75 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('assistant');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.assistant')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('assistant')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="assistantPhone">
+                  <Translate contentKey="lxmcrmApp.leadInfo.assistantPhone" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="assistantPhone"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('assistantPhone');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.assistantPhone')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('assistantPhone')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="converted">
+                  <Translate contentKey="lxmcrmApp.leadInfo.converted" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="converted"
+                    render={({ field, fieldState }) => (
+                      <InputSwitch
+                        id={field.name}
+                        onChange={e => field.onChange(e.value)}
+                        checked={field.value}
+                        onBlur={() => {
+                          trigger('converted');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.converted')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('converted')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="referedBy">
+                  <Translate contentKey="lxmcrmApp.leadInfo.referedBy" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="referedBy"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('referedBy');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.referedBy')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('referedBy')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="leadSource">
+                  <Translate contentKey="lxmcrmApp.leadInfo.leadSource" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="leadSource"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('leadSource');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.leadSource')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('leadSource')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="leadSourceDescription">
+                  <Translate contentKey="lxmcrmApp.leadInfo.leadSourceDescription" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="leadSourceDescription"
+                    rules={{
+                      maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('leadSourceDescription');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.leadSourceDescription')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('leadSourceDescription')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="status">
+                  <Translate contentKey="lxmcrmApp.leadInfo.status" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="status"
+                    rules={{
+                      maxLength: { value: 100, message: translate('entity.validation.maxlength', { max: 100 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('status');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.status')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('status')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="statusDescription">
+                  <Translate contentKey="lxmcrmApp.leadInfo.statusDescription" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="statusDescription"
+                    rules={{
+                      maxLength: { value: 512, message: translate('entity.validation.maxlength', { max: 512 }) },
+                    }}
+                    render={({ field, fieldState }) => (
+                      <InputText
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        onBlur={() => {
+                          trigger('statusDescription');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.statusDescription')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('statusDescription')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="birthdate">
+                  <Translate contentKey="lxmcrmApp.leadInfo.birthdate" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="birthdate"
+                    render={({ field, fieldState }) => (
+                      <Calendar
+                        id={field.name}
+                        onChange={e => field.onChange(e.value)}
+                        value={field.value ? dayjs(convertDateTimeFromServer(field.value)).toDate() : null}
+                        dateFormat="yy-mm-dd"
+                        mask="9999-99-99"
+                        showIcon
+                        onBlur={() => {
+                          trigger('birthdate');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.birthdate')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('birthdate')}
+                </div>
+              </div>
+              <div>
+                <label htmlFor="description">
+                  <Translate contentKey="lxmcrmApp.leadInfo.description" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="description"
+                    render={({ field, fieldState }) => (
+                      <InputTextarea
+                        id={field.name}
+                        {...field}
+                        value={field.value ? field.value : ''}
+                        rows={5}
+                        onBlur={() => {
+                          trigger('description');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.description')}
+                      />
+                    )}
+                  />
+                  {getFormErrorMessage('description')}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="reportsTo">
+                  <Translate contentKey="lxmcrmApp.leadInfo.reportsTo" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="reportsTo"
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field?.value?.id}
+                        onChange={e => field.onChange(leadInfos.find(it => it.id === e.value))}
+                        options={leadInfos}
+                        optionValue="id"
+                        optionLabel="lastName"
+                        showClear
+                        onBlur={() => {
+                          trigger('reportsTo');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.reportsTo')}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="assignedUser">
+                  <Translate contentKey="lxmcrmApp.leadInfo.assignedUser" />
+                </label>
+                <div>
+                  <Controller
+                    control={control}
+                    name="assignedUser"
+                    render={({ field, fieldState }) => (
+                      <Dropdown
+                        id={field.name}
+                        value={field?.value?.id}
+                        onChange={e => field.onChange(users.find(it => it.id === e.value))}
+                        options={users}
+                        optionValue="id"
+                        optionLabel="login"
+                        showClear
+                        onBlur={() => {
+                          trigger('assignedUser');
+                        }}
+                        className={classNames({
+                          'p-invalid': fieldState.invalid,
+                        })}
+                        tooltipOptions={{ position: 'top' }}
+                        tooltip={translate('lxmcrmApp.leadInfo.help.assignedUser')}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="l-form-footer">
+              <Button type="button" label={translate('entity.action.back')} icon="pi pi-arrow-left" outlined onClick={() => navigate(-1)} />
+              <Button type="submit" label={translate('entity.action.save')} icon="pi pi-save" disabled={updating} />
+            </div>
+          </form>
+        </>
+      )}
     </div>
   );
 };

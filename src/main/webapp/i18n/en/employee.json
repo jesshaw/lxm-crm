@@ -19,9 +19,14 @@
       },
       "id": "Id",
       "title": "Title",
+      "nickName": "NickName",
       "user": "User",
+      "reportsTo": "Reports To",
       "help": {
-        "title": "Title"
+        "title": "Title",
+        "nickName": "NickName",
+        "user": "User",
+        "reportsTo": "Reports To"
       }
     }
   }

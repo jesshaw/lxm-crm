@@ -11,11 +11,17 @@
       "fieldType": "String",
       "fieldValidateRules": ["maxlength"],
       "fieldValidateRulesMaxlength": "50"
+    },
+    {
+      "documentation": "昵称",
+      "fieldName": "nickName",
+      "fieldType": "String"
     }
   ],
   "name": "Employee",
   "relationships": [
     {
+      "documentation": "登录用户",
       "options": {
         "id": true,
         "onDelete": "CASCADE"
@@ -26,6 +32,14 @@
       "relationshipSide": "left",
       "relationshipType": "one-to-one",
       "relationshipWithBuiltInEntity": true
+    },
+    {
+      "documentation": "汇报",
+      "otherEntityField": "nickName",
+      "otherEntityName": "employee",
+      "relationshipName": "reportsTo",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no"

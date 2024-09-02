@@ -22,7 +22,9 @@
       "permission": "Permission",
       "authority": "Authority",
       "help": {
-        "name": "Name"
+        "name": "Name",
+        "permission": "Permission",
+        "authority": "Authority"
       }
     }
   }

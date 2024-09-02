@@ -3,7 +3,6 @@ import { IUser } from 'app/shared/model/user.model';
 
 export interface ILeadInfo {
   id?: number;
-  description?: string | null;
   salutation?: string | null;
   firstName?: string | null;
   lastName?: string | null;
@@ -37,6 +36,7 @@ export interface ILeadInfo {
   status?: string | null;
   statusDescription?: string | null;
   birthdate?: dayjs.Dayjs | null;
+  description?: string | null;
   reportsTo?: ILeadInfo | null;
   assignedUser?: IUser | null;
 }

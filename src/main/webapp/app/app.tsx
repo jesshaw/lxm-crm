@@ -3,7 +3,9 @@ import './app.css';
 import 'app/config/dayjs';
 
 import React, { useEffect, useState, useRef } from 'react';
-import { Card } from 'reactstrap';
+import { TranslatorContext, translate } from 'react-jhipster';
+// import { Card } from 'reactstrap';
+import { locale, addLocale } from 'primereact/api';
 import { BrowserRouter } from 'react-router-dom';
 // import { ToastContainer, toast } from 'react-toastify';
 
@@ -24,6 +26,17 @@ import { toBreadItems } from 'app/shared/layout/menus/bread-item';
 
 const baseHref = document.querySelector('base').getAttribute('href').replace(/\/$/, '');
 
+const localePrimeReact = lang => {
+  const primeReactLocale = TranslatorContext.context.translations[lang]?.primeReact;
+  if (!!primeReactLocale) {
+    addLocale(lang, primeReactLocale);
+    locale(lang);
+  } else {
+    //无翻译测设置为英语
+    locale('en');
+  }
+};
+
 export const App = () => {
   const dispatch = useAppDispatch();
 
@@ -31,6 +44,10 @@ export const App = () => {
     dispatch(getSession());
     dispatch(getProfile());
   }, []);
+
+  useEffect(() => {
+    localePrimeReact(TranslatorContext.context.locale);
+  }, [TranslatorContext.context.locale]);
 
   const currentLocale = useAppSelector(state => state.locale.currentLocale);
   const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
@@ -67,6 +84,7 @@ export const App = () => {
 
   const hideMobileLayout = () => {
     layoutContainer.current?.classList.remove(layoutMobileActive);
+    document.body.classList.remove(blockedScroll);
   };
 
   useEffect(() => {
@@ -114,11 +132,9 @@ export const App = () => {
               <BreadCrumb model={toBreadItems(breadItems)} />
             </div>
             <div className="container-fluid view-container" id="app-view-container">
-              <Card className="jh-card">
-                <ErrorBoundary>
-                  <AppRoutes />
-                </ErrorBoundary>
-              </Card>
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
               <Footer />
             </div>
           </div>

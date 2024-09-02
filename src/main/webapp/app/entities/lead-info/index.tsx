@@ -6,7 +6,6 @@ import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import LeadInfo from './lead-info';
 import LeadInfoDetail from './lead-info-detail';
 import LeadInfoUpdate from './lead-info-update';
-import LeadInfoDeleteDialog from './lead-info-delete-dialog';
 
 const LeadInfoRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -15,7 +14,6 @@ const LeadInfoRoutes = () => (
     <Route path=":id">
       <Route index element={<LeadInfoDetail />} />
       <Route path="edit" element={<LeadInfoUpdate />} />
-      <Route path="delete" element={<LeadInfoDeleteDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

@@ -14,6 +14,7 @@
       "fieldValidateRulesMaxlength": "100"
     },
     {
+      "documentation": "权限",
       "fieldName": "permission",
       "fieldType": "String"
     }
@@ -21,6 +22,7 @@
   "name": "Resource",
   "relationships": [
     {
+      "documentation": "角色",
       "otherEntityField": "name",
       "otherEntityName": "authority",
       "relationshipName": "authority",

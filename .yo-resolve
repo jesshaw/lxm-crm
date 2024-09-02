@@ -8,3 +8,8 @@ src\main\webapp\app\entities\reducers.ts skip
 src\main\resources\config\liquibase\fake-data\resource.csv skip
 .gitignore skip
 src\main\webapp\app\entities\reducers.ts skip
+.prettierrc skip
+.prettierignore skip
+sonar-project.properties skip
+.lintstagedrc.cjs skip
+src\main\webapp\i18n\zh-cn\adminUserManagement.json skip

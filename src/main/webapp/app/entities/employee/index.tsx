@@ -6,7 +6,6 @@ import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import Employee from './employee';
 import EmployeeDetail from './employee-detail';
 import EmployeeUpdate from './employee-update';
-import EmployeeDeleteDialog from './employee-delete-dialog';
 
 const EmployeeRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -15,7 +14,6 @@ const EmployeeRoutes = () => (
     <Route path=":id">
       <Route index element={<EmployeeDetail />} />
       <Route path="edit" element={<EmployeeUpdate />} />
-      <Route path="delete" element={<EmployeeDeleteDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

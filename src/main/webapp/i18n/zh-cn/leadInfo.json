@@ -18,7 +18,6 @@
         "title": "潜客"
       },
       "id": "ID",
-      "description": "描述",
       "salutation": "称呼",
       "firstName": "名",
       "lastName": "姓",
@@ -52,10 +51,10 @@
       "status": "状态",
       "statusDescription": "状态描述",
       "birthdate": "生日",
-      "reportsTo": "Reports To",
-      "assignedUser": "Assigned User",
+      "description": "描述",
+      "reportsTo": "汇报人",
+      "assignedUser": "分派给",
       "help": {
-        "description": "描述",
         "salutation": "称呼",
         "firstName": "名",
         "lastName": "姓",
@@ -88,7 +87,10 @@
         "leadSourceDescription": "来源描述",
         "status": "状态",
         "statusDescription": "状态描述",
-        "birthdate": "生日"
+        "birthdate": "生日",
+        "description": "描述",
+        "reportsTo": "汇报人",
+        "assignedUser": "分派给"
       }
     }
   }

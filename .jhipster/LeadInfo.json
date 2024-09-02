@@ -7,12 +7,6 @@
   "dto": "mapstruct",
   "fields": [
     {
-      "documentation": "描述",
-      "fieldName": "description",
-      "fieldType": "byte[]",
-      "fieldTypeBlobContent": "text"
-    },
-    {
       "documentation": "称呼",
       "fieldName": "salutation",
       "fieldType": "String",
@@ -234,6 +228,12 @@
       "documentation": "生日",
       "fieldName": "birthdate",
       "fieldType": "LocalDate"
+    },
+    {
+      "documentation": "描述",
+      "fieldName": "description",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
     }
   ],
   "jpaMetamodelFiltering": true,
@@ -249,7 +249,7 @@
       "relationshipType": "many-to-one"
     },
     {
-      "documentation": "汇报人",
+      "documentation": "分派给",
       "otherEntityField": "login",
       "otherEntityName": "user",
       "relationshipName": "assignedUser",

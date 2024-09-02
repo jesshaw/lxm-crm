@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Button, Table } from 'reactstrap';
-import { Translate, getSortState } from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+// import { Button, Table } from 'reactstrap';
+import { Toolbar } from 'primereact/toolbar';
+import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
+import { Column } from 'primereact/column';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import { Translate, translate, TranslatorContext, getSortState } from 'react-jhipster';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { ASC, DESC, SORT } from 'app/shared/util/pagination.constants';
 import { overrideSortStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
-import { getEntities } from './employee.reducer';
+import { getEntities, deleteEntity } from './employee.reducer';
+import { IEmployee } from 'app/shared/model/employee.model';
+import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 
 export const Employee = () => {
   const dispatch = useAppDispatch();
@@ -17,6 +25,10 @@ export const Employee = () => {
   const navigate = useNavigate();
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
+
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.employeeMenuItem]));
+  }, []);
 
   const employeeList = useAppSelector(state => state.employee.entities);
   const loading = useAppSelector(state => state.employee.loading);
@@ -41,11 +53,11 @@ export const Employee = () => {
     sortEntities();
   }, [sortState.order, sortState.sort]);
 
-  const sort = p => () => {
+  const onSort = (e: DataTableStateEvent) => {
     setSortState({
       ...sortState,
       order: sortState.order === ASC ? DESC : ASC,
-      sort: p,
+      sort: e.sortField,
     });
   };
 
@@ -53,100 +65,276 @@ export const Employee = () => {
     sortEntities();
   };
 
-  const getSortIconByFieldName = (fieldName: string) => {
-    const sortFieldName = sortState.sort;
-    const order = sortState.order;
-    if (sortFieldName !== fieldName) {
-      return faSort;
-    } else {
-      return order === ASC ? faSortUp : faSortDown;
-    }
+  let emptyEmployee: IEmployee = {};
+
+  const [deleteEmployeeDialog, setDeleteEmployeeDialog] = useState<boolean>(false);
+  const [employee, setEmployee] = useState<IEmployee>(emptyEmployee);
+  const updateSuccess = useAppSelector(state => state.employee.updateSuccess);
+
+  const hideDeleteEmployeeDialog = () => {
+    setDeleteEmployeeDialog(false);
   };
 
-  return (
-    <div>
-      <h2 id="employee-heading" data-cy="EmployeeHeading">
-        <Translate contentKey="lxmcrmApp.employee.home.title">Employees</Translate>
-        <div className="d-flex justify-content-end">
-          <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
-            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
-            <Translate contentKey="lxmcrmApp.employee.home.refreshListLabel">Refresh List</Translate>
-          </Button>
-          <Link to="/employee/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp;
-            <Translate contentKey="lxmcrmApp.employee.home.createLabel">Create new Employee</Translate>
-          </Link>
-        </div>
-      </h2>
-      <div className="table-responsive">
-        {employeeList && employeeList.length > 0 ? (
-          <Table responsive>
-            <thead>
-              <tr>
-                <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="lxmcrmApp.employee.id">ID</Translate> <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
-                </th>
-                <th className="hand" onClick={sort('title')}>
-                  <Translate contentKey="lxmcrmApp.employee.title">Title</Translate>{' '}
-                  <FontAwesomeIcon icon={getSortIconByFieldName('title')} />
-                </th>
-                <th>
-                  <Translate contentKey="lxmcrmApp.employee.user">User</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {employeeList.map((employee, i) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/employee/${employee.id}`} color="link" size="sm">
-                      {employee.id}
-                    </Button>
-                  </td>
-                  <td>{employee.title}</td>
-                  <td>{employee.user ? employee.user.login : ''}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/employee/${employee.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
-                      </Button>
-                      <Button tag={Link} to={`/employee/${employee.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={() => (window.location.href = `/employee/${employee.id}/delete`)}
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        ) : (
-          !loading && (
-            <div className="alert alert-warning">
-              <Translate contentKey="lxmcrmApp.employee.home.notFound">No Employees found</Translate>
-            </div>
-          )
-        )}
+  const dt = useRef<DataTable<IEmployee[]>>(null);
+
+  const startToolbarTemplate = () => {
+    return (
+      <div className="flex flex-wrap gap-2">
+        <Button
+          label={translate('entity.action.refresh')}
+          icon={`pi ${loading ? 'pi-spin' : ''} pi-refresh`}
+          onClick={handleSyncList}
+          disabled={loading}
+        />
+        <Button label={translate('entity.action.new')} icon="pi pi-plus" severity="success" onClick={() => navigate('/employee/new')} />
       </div>
+    );
+  };
+
+  const endToolbarTemplate = () => {
+    return (
+      <>
+        <Button label={translate('entity.action.export')} icon="pi pi-upload" className="p-button-help" onClick={exportCSV} />
+      </>
+    );
+  };
+
+  const exportCSV = () => {
+    dt.current?.exportCSV();
+  };
+
+  const confirmDeleteEmployee = (employee: IEmployee) => {
+    setEmployee(employee);
+    setDeleteEmployeeDialog(true);
+  };
+
+  const deleteEmployee = () => {
+    dispatch(deleteEntity(employee.id));
+  };
+
+  useEffect(() => {
+    if (updateSuccess && deleteEmployeeDialog) {
+      setDeleteEmployeeDialog(false);
+      sortEntities();
+      setEmployee(emptyEmployee);
+    }
+  }, [updateSuccess]);
+
+  const deleteEmployeeDialogFooter = (
+    <>
+      <Button label={translate('entity.action.cancel')} icon="pi pi-times" outlined onClick={hideDeleteEmployeeDialog} />
+      <Button label={translate('entity.action.delete')} icon="pi pi-check" severity="danger" onClick={deleteEmployee} />
+    </>
+  );
+
+  const allColumns = [
+    {
+      field: 'id',
+      headerKey: 'lxmcrmApp.employee.id',
+      sortable: true,
+    },
+    {
+      field: 'title',
+      headerKey: 'lxmcrmApp.employee.title',
+      sortable: true,
+    },
+    {
+      field: 'nickName',
+      headerKey: 'lxmcrmApp.employee.nickName',
+      sortable: true,
+    },
+    {
+      field: 'user.login',
+      headerKey: 'lxmcrmApp.employee.user',
+      sortable: true,
+      body: rowData => {
+        return <>{rowData.user ? rowData.user.login : ''}</>;
+      },
+    },
+    {
+      field: 'reportsTo.nickName',
+      headerKey: 'lxmcrmApp.employee.reportsTo',
+      sortable: true,
+      body: rowData => {
+        return (
+          rowData.reportsTo && (
+            <Button text label={rowData.reportsTo.nickName} onClick={() => navigate(`/employee/${rowData.reportsTo.id}`)} />
+          )
+        );
+      },
+    },
+    {
+      field: 'lOperate',
+      headerKey: 'entity.cloumn.operation',
+      exportable: false,
+      style: { minWidth: '12rem' },
+      body: rowData => {
+        return (
+          <>
+            <Button
+              icon="pi pi-eye"
+              tooltip={translate('entity.action.view')}
+              tooltipOptions={{ position: 'top' }}
+              rounded
+              outlined
+              className="mr-2"
+              onClick={() => navigate(`/employee/${rowData.id}`)}
+            />
+            <Button
+              icon="pi pi-pencil"
+              tooltip={translate('entity.action.edit')}
+              tooltipOptions={{ position: 'top' }}
+              rounded
+              outlined
+              className="mr-2"
+              onClick={() => navigate(`/employee/${rowData.id}/edit?sort=${sortState.sort},${sortState.order}`)}
+            />
+            <Button
+              icon="pi pi-trash"
+              tooltip={translate('entity.action.delete')}
+              tooltipOptions={{ position: 'top' }}
+              rounded
+              outlined
+              severity="danger"
+              onClick={() => confirmDeleteEmployee(rowData)}
+            />
+          </>
+        );
+      },
+    },
+  ];
+
+  //localStorage key used to store display columns
+  const entityColumnsKey = 'lxmcrmApp.employee.cloumns';
+
+  const getDefaultSelectedColumns = () => {
+    let storageColumns = localStorage.getItem(entityColumnsKey);
+    console.log(storageColumns);
+    let defaultSelectedColumns;
+    if (storageColumns !== null) {
+      defaultSelectedColumns = JSON.parse(storageColumns);
+    } else {
+      let willBeDisplayedColumns = allColumns.length <= 6 ? allColumns.slice(0, allColumns.length - 2) : allColumns.slice(0, 5);
+      willBeDisplayedColumns.push(allColumns[allColumns.length - 1]); // push last operation comlumn
+      defaultSelectedColumns = willBeDisplayedColumns.map(item => ({
+        header: translate(item.headerKey),
+        headerKey: item.headerKey,
+        field: item.field,
+      }));
+    }
+    return defaultSelectedColumns;
+  };
+
+  const [selectedColumns, setSelectedColumns] = useState(getDefaultSelectedColumns());
+
+  const columnOptions = allColumns.map(item => ({
+    header: translate(item.headerKey),
+    headerKey: item.headerKey,
+    field: item.field,
+  }));
+
+  useEffect(() => {
+    let _selectedColumns = [...selectedColumns];
+    _selectedColumns.forEach(item => (item.header = translate(item.headerKey)));
+    // console.log(_selectedColumns);
+    setSelectedColumns(_selectedColumns);
+  }, [TranslatorContext.context.locale]);
+
+  const onColumnToggle = (event: MultiSelectChangeEvent) => {
+    let _selectedColumns = [...selectedColumns];
+    const selectedOption = event.selectedOption;
+    if (Array.isArray(selectedOption)) {
+      if (_selectedColumns.length < columnOptions.length) {
+        _selectedColumns = columnOptions;
+      } else {
+        _selectedColumns = [];
+      }
+    } else {
+      const existingIndex = _selectedColumns.findIndex(existingCol => existingCol.field === selectedOption.field);
+      if (existingIndex !== -1) {
+        _selectedColumns.splice(existingIndex, 1);
+      } else {
+        _selectedColumns.push(columnOptions.find(item => item.field === selectedOption.field));
+      }
+    }
+
+    setSelectedColumns(_selectedColumns);
+    localStorage.setItem(entityColumnsKey, JSON.stringify(_selectedColumns));
+  };
+
+  const header = (
+    <div className="l-datatable-header">
+      <h5>
+        <Translate contentKey="lxmcrmApp.employee.home.title">Employees</Translate>
+      </h5>
+      <MultiSelect
+        value={selectedColumns}
+        options={columnOptions}
+        optionLabel="header"
+        filter
+        onChange={onColumnToggle}
+        className="l-select-columns"
+        placeholder={translate('entity.cloumn.placeholder')}
+        display="chip"
+      />
     </div>
+  );
+
+  const dynamicColumns = selectedColumns
+    .filter(selectedCol => allColumns.some(col => col.field === selectedCol.field))
+    .map(selectedCol => {
+      const column = allColumns.find(col => col.field === selectedCol.field);
+      return (
+        <Column
+          key={column?.field}
+          field={column?.field}
+          header={translate(column?.headerKey)}
+          body={column?.body ? column.body : undefined}
+          sortable={column?.sortable}
+          exportable={column?.exportable}
+          style={column?.style}
+        />
+      );
+    });
+
+  return (
+    <>
+      <div className="l-card">
+        <Toolbar className="l-toolbar" start={startToolbarTemplate} end={endToolbarTemplate}></Toolbar>
+        <DataTable
+          ref={dt}
+          value={employeeList}
+          dataKey="id"
+          selectionMode="single"
+          header={header}
+          emptyMessage={translate('lxmcrmApp.employee.home.notFound')}
+          onSort={onSort} //sort by backend
+          sortField={sortState.sort}
+          sortOrder={sortState.order === ASC ? -1 : 1}
+        >
+          {dynamicColumns}
+        </DataTable>
+      </div>
+
+      <Dialog
+        visible={deleteEmployeeDialog}
+        style={{ width: '32rem' }}
+        breakpoints={{ '960px': '75vw', '641px': '90vw' }}
+        header={translate('entity.delete.title')}
+        modal
+        footer={deleteEmployeeDialogFooter}
+        onHide={hideDeleteEmployeeDialog}
+      >
+        <div className="confirmation-content">
+          <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+          {employee && (
+            <Translate contentKey="lxmcrmApp.employee.delete.question" interpolate={{ id: employee.id }}>
+              Are you sure you want to delete this Employee?
+            </Translate>
+          )}
+        </div>
+      </Dialog>
+    </>
   );
 };
 

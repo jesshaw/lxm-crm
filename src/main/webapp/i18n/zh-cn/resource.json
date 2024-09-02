@@ -19,10 +19,12 @@
       },
       "id": "ID",
       "name": "资原名",
-      "permission": "Permission",
-      "authority": "Authority",
+      "permission": "权限",
+      "authority": "角色",
       "help": {
-        "name": "资原名"
+        "name": "资原名",
+        "permission": "权限",
+        "authority": "角色"
       }
     }
   }
