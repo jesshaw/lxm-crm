@@ -5,7 +5,6 @@ import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 import UserManagement from './user-management';
 import UserManagementDetail from './user-management-detail';
 import UserManagementUpdate from './user-management-update';
-import UserManagementDeleteDialog from './user-management-delete-dialog';
 
 const UserManagementRoutes = () => (
   <ErrorBoundaryRoutes>
@@ -14,7 +13,6 @@ const UserManagementRoutes = () => (
     <Route path=":login">
       <Route index element={<UserManagementDetail />} />
       <Route path="edit" element={<UserManagementUpdate />} />
-      <Route path="delete" element={<UserManagementDeleteDialog />} />
     </Route>
   </ErrorBoundaryRoutes>
 );

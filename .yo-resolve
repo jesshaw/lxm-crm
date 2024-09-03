@@ -12,4 +12,5 @@ src\main\webapp\app\entities\reducers.ts skip
 .prettierignore skip
 sonar-project.properties skip
 .lintstagedrc.cjs skip
+package.json skip
 src\main\webapp\i18n\zh-cn\adminUserManagement.json skip
