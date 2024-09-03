@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-// import { Button, Col, Row } from 'reactstrap';
+import { Button, Col, Row } from 'reactstrap';
 import {
   CacheMetrics,
   DatasourceMetrics,
@@ -10,14 +10,12 @@ import {
   EndpointsRequestsMetrics,
   SystemMetrics,
   Translate,
-  translate,
 } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_TIMESTAMP_FORMAT, APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT, APP_WHOLE_NUMBER_FORMAT } from 'app/config/constants';
 import { getSystemMetrics, getSystemThreadDump } from '../administration.reducer';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { Button } from 'primereact/button';
 
 export const MetricsPage = () => {
   const dispatch = useAppDispatch();
@@ -43,33 +41,38 @@ export const MetricsPage = () => {
         <Translate contentKey="metrics.title">Application Metrics</Translate>
       </h2>
       <p>
-        <Button
-          label={translate('health.refresh.button')}
-          icon={`pi ${isFetching ? 'pi-spin' : ''} pi-refresh`}
-          onClick={getMetrics}
-          disabled={isFetching}
-        />
+        <Button onClick={getMetrics} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching}>
+          <FontAwesomeIcon icon="sync" />
+          &nbsp;
+          <Translate component="span" contentKey="health.refresh.button">
+            Refresh
+          </Translate>
+        </Button>
       </p>
       <hr />
 
-      <div className="grid columns-1 md:columns-3">
-        <h3 className="md:col-span-3">
-          <Translate contentKey="metrics.jvm.title">JVM Metrics</Translate>
-        </h3>
-        <div>{metrics?.jvm ? <JvmMemory jvmMetrics={metrics.jvm} wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT} /> : ''}</div>
-        <div>{threadDump ? <JvmThreads jvmThreads={threadDump} wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT} /> : ''}</div>
-        <div>
-          {metrics?.processMetrics ? (
-            <SystemMetrics
-              systemMetrics={metrics.processMetrics}
-              wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT}
-              timestampFormat={APP_TIMESTAMP_FORMAT}
-            />
-          ) : (
-            ''
-          )}
-        </div>
-      </div>
+      <Row>
+        <Col sm="12">
+          <h3>
+            <Translate contentKey="metrics.jvm.title">JVM Metrics</Translate>
+          </h3>
+          <Row>
+            <Col md="4">{metrics?.jvm ? <JvmMemory jvmMetrics={metrics.jvm} wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT} /> : ''}</Col>
+            <Col md="4">{threadDump ? <JvmThreads jvmThreads={threadDump} wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT} /> : ''}</Col>
+            <Col md="4">
+              {metrics?.processMetrics ? (
+                <SystemMetrics
+                  systemMetrics={metrics.processMetrics}
+                  wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT}
+                  timestampFormat={APP_TIMESTAMP_FORMAT}
+                />
+              ) : (
+                ''
+              )}
+            </Col>
+          </Row>
+        </Col>
+      </Row>
 
       {metrics?.garbageCollector ? (
         <GarbageCollectorMetrics garbageCollectorMetrics={metrics.garbageCollector} wholeNumberFormat={APP_WHOLE_NUMBER_FORMAT} />
@@ -91,7 +94,7 @@ export const MetricsPage = () => {
         ''
       )}
 
-      {/* {metrics?.cache ? (
+      {metrics?.cache ? (
         <Row>
           <Col sm="12">
             <CacheMetrics cacheMetrics={metrics.cache} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
@@ -99,9 +102,9 @@ export const MetricsPage = () => {
         </Row>
       ) : (
         ''
-      )} */}
+      )}
 
-      {/* {metrics?.databases && JSON.stringify(metrics.databases) !== '{}' ? (
+      {metrics?.databases && JSON.stringify(metrics.databases) !== '{}' ? (
         <Row>
           <Col sm="12">
             <DatasourceMetrics datasourceMetrics={metrics.databases} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
@@ -109,7 +112,7 @@ export const MetricsPage = () => {
         </Row>
       ) : (
         ''
-      )} */}
+      )}
     </div>
   );
 };
