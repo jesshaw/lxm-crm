@@ -73,3 +73,7 @@ yarn add webpack webpack-cli --save-dev
 ### 鼠标悬停Tailwind CSS智能提示不能显示
 
 Command Palette(Ctrl+Shift+p) -> Tailwind CSS: Show Output 查看日志排查解决
+
+### 调试时未按预期生成
+
+rm -rf node_modules/generator-jhipster-chimera
