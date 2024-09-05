@@ -11,9 +11,9 @@ export class DatasourceMetrics extends React.Component<IDatasourceMetricsProps> 
   render() {
     const { datasourceMetrics, twoDigitAfterPointFormat } = this.props;
     return (
-      <div>
+      <div className="grid min-w-96 grid-cols-1 gap-5 overflow-auto">
         <h3>DataSource statistics (time in millisecond)</h3>
-        <Table>
+        <table className="l-table">
           <thead>
             <tr>
               <th>
@@ -108,7 +108,7 @@ export class DatasourceMetrics extends React.Component<IDatasourceMetricsProps> 
               </td>
             </tr>
           </tbody>
-        </Table>
+        </table>
       </div>
     );
   }

@@ -1,6 +1,6 @@
+import { ProgressBar } from 'primereact/progressbar';
 import React from 'react';
 import { TextFormat } from 'react-jhipster';
-import { Progress, Col, Row } from 'reactstrap';
 
 export interface ISystemMetricsProps {
   systemMetrics: any;
@@ -33,66 +33,57 @@ export class SystemMetrics extends React.Component<ISystemMetricsProps> {
   render() {
     const { systemMetrics, wholeNumberFormat, timestampFormat } = this.props;
     return (
-      <div>
+      <div className="l-metrics">
         <h4>System</h4>
-        <Row>
-          <Col md="4">Uptime</Col>
-          <Col md="8" className="text-end">
-            {SystemMetrics.convertMillisecondsToDuration(systemMetrics['process.uptime'])}
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">Start time</Col>
-          <Col md="8" className="text-end">
+        <div className="flex">
+          <div className="w-4/12">Uptime</div>
+          <div className="w-8/12 text-end">{SystemMetrics.convertMillisecondsToDuration(systemMetrics['process.uptime'])}</div>
+        </div>
+        <div className="flex">
+          <div className="w-4/12">Start time</div>
+          <div className="w-8/12 text-end">
             <TextFormat value={systemMetrics['process.start.time']} type="date" format={timestampFormat} />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="9">Process CPU usage</Col>
-          <Col md="3" className="text-end">
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-9/12">Process CPU usage</div>
+          <div className="w-3/12 text-end">
             <TextFormat value={100 * systemMetrics['process.cpu.usage']} type="number" format={wholeNumberFormat} /> %
-          </Col>
-        </Row>
-        <Progress animated value={100 * systemMetrics['process.cpu.usage']} color="success">
-          <span>
-            <TextFormat value={100 * systemMetrics['process.cpu.usage']} type="number" format={wholeNumberFormat} /> %
-          </span>
-        </Progress>
-        <Row>
-          <Col md="9">System CPU usage</Col>
-          <Col md="3" className="text-end">
+          </div>
+        </div>
+        <ProgressBar
+          aria-valuenow={100 * systemMetrics['process.cpu.usage']}
+          value={Math.round(100 * systemMetrics['process.cpu.usage'])}
+        />
+        <div className="flex">
+          <div className="w-9/12">System CPU usage</div>
+          <div className="w-3/12 text-end">
             <TextFormat value={100 * systemMetrics['system.cpu.usage']} type="number" format={wholeNumberFormat} /> %
-          </Col>
-        </Row>
-        <Progress animated value={100 * systemMetrics['system.cpu.usage']} color="success">
-          <span>
-            <TextFormat value={100 * systemMetrics['system.cpu.usage']} type="number" format={wholeNumberFormat} /> %
-          </span>
-        </Progress>
-        <Row>
-          <Col md="9">System CPU count</Col>
-          <Col md="3" className="text-end">
-            {systemMetrics['system.cpu.count']}
-          </Col>
-        </Row>
-        <Row>
-          <Col md="9">System 1m Load average</Col>
-          <Col md="3" className="text-end">
+          </div>
+        </div>
+        <ProgressBar aria-valuenow={100 * systemMetrics['system.cpu.usage']} value={Math.round(100 * systemMetrics['system.cpu.usage'])} />
+        <div className="flex">
+          <div className="w-9/12">System CPU count</div>
+          <div className="w-3/12 text-end">{systemMetrics['system.cpu.count']}</div>
+        </div>
+        <div className="flex">
+          <div className="w-9/12">System 1m Load average</div>
+          <div className="w-3/12 text-end">
             <TextFormat value={systemMetrics['system.load.average.1m']} type="number" format={wholeNumberFormat} />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="7">Process files max</Col>
-          <Col md="5" className="text-end">
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-7/12">Process files max</div>
+          <div className="w-5/12 text-end">
             <TextFormat value={systemMetrics['process.files.max']} type="number" format={wholeNumberFormat} />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">Process files open</Col>
-          <Col md="8" className="text-end">
+          </div>
+        </div>
+        <div className="flex">
+          <div className="w-4/12">Process files open</div>
+          <div className="w-8/12 text-end">
             <TextFormat value={systemMetrics['process.files.open']} type="number" format={wholeNumberFormat} />
-          </Col>
-        </Row>
+          </div>
+        </div>
       </div>
     );
   }

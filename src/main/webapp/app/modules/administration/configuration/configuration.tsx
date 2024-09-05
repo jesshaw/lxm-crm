@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Input, Row, Col, Badge } from 'reactstrap';
-import { Translate } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 
 import { getConfigurations, getEnv } from '../administration.reducer';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
+import { InputText } from 'primereact/inputtext';
 
 export const ConfigurationPage = () => {
   const [filter, setFilter] = useState('');
@@ -12,6 +13,10 @@ export const ConfigurationPage = () => {
   const dispatch = useAppDispatch();
 
   const configuration = useAppSelector(state => state.administration.configuration);
+
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.administrationMenuItem, MenuItemsData.configurationMenuItem]));
+  }, []);
 
   useEffect(() => {
     dispatch(getConfigurations());
@@ -38,59 +43,71 @@ export const ConfigurationPage = () => {
   const env = configuration?.env ?? {};
 
   return (
-    <div>
+    <div className="l-card overflow-auto">
       <h2 id="configuration-page-heading" data-cy="configurationPageHeading">
         <Translate contentKey="configuration.title">Configuration</Translate>
       </h2>
-      <span>
-        <Translate contentKey="configuration.filter">Filter</Translate>
-      </span>{' '}
-      <Input type="search" value={filter} onChange={changeFilter} name="search" id="search" />
-      <label>Spring configuration</label>
-      <Table className="table table-striped table-bordered table-responsive d-table">
+      <InputText
+        type="search"
+        value={filter}
+        placeholder={translate('configuration.filter')}
+        onChange={changeFilter}
+        name="search"
+        id="search"
+      />
+      <h4>Spring configuration</h4>
+      <table className="l-table">
         <thead>
           <tr>
-            <th onClick={changeReversePrefix}>
+            <th className="cursor-pointer" onClick={changeReversePrefix}>
               <Translate contentKey="configuration.table.prefix">Prefix</Translate>
             </th>
-            <th onClick={changeReverseProperties}>
+            <th className="cursor-pointer" onClick={changeReverseProperties}>
               <Translate contentKey="configuration.table.properties">Properties</Translate>
             </th>
           </tr>
         </thead>
         <tbody>
           {configProps.contexts
-            ? Object.values(getContextList(configProps.contexts))
+            ? (reversePrefix
+                ? Object.values(getContextList(configProps.contexts)).sort((p1, p2) => p1['prefix'].localeCompare(p2['prefix']))
+                : Object.values(getContextList(configProps.contexts))
+              )
                 .filter(propsFilterFn)
                 .map((property: any, propIndex) => (
                   <tr key={propIndex}>
                     <td>{property['prefix']}</td>
                     <td>
-                      {Object.keys(property['properties']).map((propKey, index) => (
-                        <Row key={index}>
-                          <Col md="4">{propKey}</Col>
-                          <Col md="8">
-                            <Badge className="float-end bg-secondary break">{JSON.stringify(property['properties'][propKey])}</Badge>
-                          </Col>
-                        </Row>
+                      {(reverseProperties
+                        ? Object.keys(property['properties']).sort((p1, p2) => p1.localeCompare(p2))
+                        : Object.keys(property['properties'])
+                      ).map((propKey, index) => (
+                        <div className="flex flex-row" key={index}>
+                          <div className="basis-4/12">{propKey}</div>
+                          <div className="basis-8/12 text-right">
+                            <div className="ml-auto max-w-[960px] break-words bg-lxm-surface-border">
+                              {JSON.stringify(property['properties'][propKey])}
+                            </div>
+                          </div>
+                        </div>
                       ))}
                     </td>
                   </tr>
                 ))
             : null}
         </tbody>
-      </Table>
+      </table>
       {env.propertySources
         ? env.propertySources.map((envKey, envIndex) => (
             <div key={envIndex}>
               <h4>
                 <span>{envKey.name}</span>
               </h4>
-              <Table className="table table-sm table-striped table-bordered table-responsive d-table">
+              <table className="l-table">
                 <thead>
                   <tr key={envIndex}>
-                    <th className="w-40">Property</th>
-                    <th className="w-60">Value</th>
+                    <th>Property</th>
+                    <th>Value</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -98,14 +115,14 @@ export const ConfigurationPage = () => {
                     .filter(envFilterFn)
                     .map((propKey, propIndex) => (
                       <tr key={propIndex}>
-                        <td className="break">{propKey}</td>
-                        <td className="break">
-                          <span className="float-end badge bg-secondary break">{envKey.properties[propKey].value}</span>
+                        <td className="text-wrap break-words">{propKey}</td>
+                        <td className="text-wrap break-words">
+                          <span className="bg-lxm-surface-border">{envKey.properties[propKey].value}</span>
                         </td>
                       </tr>
                     ))}
                 </tbody>
-              </Table>
+              </table>
             </div>
           ))
         : null}

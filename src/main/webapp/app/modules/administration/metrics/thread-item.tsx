@@ -1,5 +1,4 @@
 import React from 'react';
-import { Collapse, Card, CardBody, Row } from 'reactstrap';
 
 export interface IThreadItemProps {
   threadDumpInfo: any;
@@ -25,26 +24,21 @@ export class ThreadItem extends React.Component<IThreadItemProps, IThreadItemSta
 
     return (
       <div>
-        <a onClick={this.toggleStackTrace} style={{ color: 'hotpink' }}>
+        <a onClick={this.toggleStackTrace} className="text-pink-500">
           {this.state.collapse ? <span>Hide StackTrace</span> : <span>Show StackTrace</span>}
         </a>
-        <Collapse isOpen={this.state.collapse}>
-          <Card>
-            <CardBody>
-              <Row className="break" style={{ overflowX: 'scroll' }}>
-                {Object.entries(threadDumpInfo.stackTrace).map(([stK, stV]: [string, any]) => (
-                  <samp key={`detail-${stK}`}>
-                    {stV.className}.{stV.methodName}
-                    <code>
-                      ({stV.fileName}:{stV.lineNumber})
-                    </code>
-                  </samp>
-                ))}
-                <span className="mt-1" />
-              </Row>
-            </CardBody>
-          </Card>
-        </Collapse>
+        <div className={this.state.collapse ? '' : 'hidden'}>
+          <pre className="overflow-x-auto rounded-lg bg-gray-900 p-6 text-gray-100 shadow-lg">
+            {Object.entries(threadDumpInfo.stackTrace).map(([stK, stV]: [string, any]) => (
+              <samp key={`detail-${stK}`} className="block">
+                {stV.className}.{stV.methodName}
+                <code className="font-mono text-base leading-relaxed text-pink-500">
+                  ({stV.fileName}:{stV.lineNumber})
+                </code>
+              </samp>
+            ))}
+          </pre>
+        </div>
       </div>
     );
   }

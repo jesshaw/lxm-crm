@@ -11,9 +11,9 @@ export class EndpointsRequestsMetrics extends React.Component<IEndpointsRequests
   render() {
     const { endpointsRequestsMetrics, wholeNumberFormat } = this.props;
     return (
-      <div>
+      <div className="grid min-w-96 grid-cols-1 gap-5 overflow-auto">
         <h3>Endpoints requests (time in millisecond)</h3>
-        <Table>
+        <table className="l-table">
           <thead>
             <tr>
               <th>Method</th>
@@ -36,7 +36,7 @@ export class EndpointsRequestsMetrics extends React.Component<IEndpointsRequests
               )),
             )}
           </tbody>
-        </Table>
+        </table>
       </div>
     );
   }

@@ -1,11 +1,14 @@
 import React from 'react';
-import { Table, Modal, ModalHeader, ModalBody, ModalFooter, Button, Input, Badge, Row } from 'reactstrap';
 
 import ThreadItem from './thread-item';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import { Badge } from 'primereact/badge';
+import { InputText } from 'primereact/inputtext';
 
 export interface IThreadsModalProps {
   showModal: boolean;
-  handleClose: (e) => void;
+  handleClose: () => void;
   threadDump: any;
 }
 
@@ -64,13 +67,13 @@ export class ThreadsModal extends React.Component<IThreadsModalProps, IThreadsMo
 
   getBadgeClass = threadState => {
     if (threadState === 'RUNNABLE') {
-      return 'badge-success';
+      return 'success';
     } else if (threadState === 'WAITING') {
-      return 'badge-info';
+      return 'info';
     } else if (threadState === 'TIMED_WAITING') {
-      return 'badge-warning';
+      return 'warning';
     } else if (threadState === 'BLOCKED') {
-      return 'badge-danger';
+      return 'danger';
     }
   };
 
@@ -88,83 +91,101 @@ export class ThreadsModal extends React.Component<IThreadsModalProps, IThreadsMo
     }
 
     return (
-      <Modal isOpen={showModal} toggle={handleClose} className="modal-lg">
-        <ModalHeader toggle={handleClose}>Threads dump</ModalHeader>
-        <ModalBody>
-          <Badge color="primary" className="hand" onClick={this.updateBadgeFilter('')}>
-            All&nbsp;
-            <Badge pill>{counters.threadDumpAll || 0}</Badge>
-          </Badge>
-          &nbsp;
-          <Badge color="success" className="hand" onClick={this.updateBadgeFilter('RUNNABLE')}>
-            Runnable&nbsp;
-            <Badge pill>{counters.threadDumpRunnable || 0}</Badge>
-          </Badge>
-          &nbsp;
-          <Badge color="info" className="hand" onClick={this.updateBadgeFilter('WAITING')}>
-            Waiting&nbsp;
-            <Badge pill>{counters.threadDumpWaiting || 0}</Badge>
-          </Badge>
-          &nbsp;
-          <Badge color="warning" className="hand" onClick={this.updateBadgeFilter('TIMED_WAITING')}>
-            Timed Waiting&nbsp;
-            <Badge pill>{counters.threadDumpTimedWaiting || 0}</Badge>
-          </Badge>
-          &nbsp;
-          <Badge color="danger" className="hand" onClick={this.updateBadgeFilter('BLOCKED')}>
-            Blocked&nbsp;
-            <Badge pill>{counters.threadDumpBlocked || 0}</Badge>
-          </Badge>
-          &nbsp;
-          <div className="mt-2">&nbsp;</div>
-          <Input type="text" className="form-control" placeholder="Filter by Lock Name..." onChange={this.updateSearchFilter} />
-          <div style={{ padding: '10px' }}>
-            {filteredList
-              ? filteredList.map((threadDumpInfo, i) => (
-                  <div key={`dump-${i}`}>
-                    <h6>
-                      {' '}
-                      <span className={'badge ' + this.getBadgeClass(threadDumpInfo.threadState)}>{threadDumpInfo.threadState}</span>
-                      &nbsp;
-                      {threadDumpInfo.threadName} (ID {threadDumpInfo.threadId}
-                      )&nbsp;
-                    </h6>
-                    <ThreadItem threadDumpInfo={threadDumpInfo} />
-                    <Row>
-                      <Table responsive>
-                        <thead>
-                          <tr>
-                            <th>Blocked Time</th>
-                            <th>Blocked Count</th>
-                            <th>Waited Time</th>
-                            <th>Waited Count</th>
-                            <th>Lock Name</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr key={threadDumpInfo.lockName}>
-                            <td>{threadDumpInfo.blockedTime}</td>
-                            <td>{threadDumpInfo.blockedCount}</td>
-                            <td>{threadDumpInfo.waitedTime}</td>
-                            <td>{threadDumpInfo.waitedCount}</td>
-                            <td className="thread-dump-modal-lock" title={threadDumpInfo.lockName}>
-                              <code>{threadDumpInfo.lockName}</code>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </Table>
-                    </Row>
-                  </div>
-                ))
-              : null}
+      <Dialog
+        header="Threads dump"
+        visible={showModal}
+        className="w-[90vw] md:w-[60vw]"
+        onHide={() => handleClose()}
+        footer={() => (
+          <div>
+            <Button label="Close" icon="pi pi-times" onClick={() => handleClose()} />
           </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleClose}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
+        )}
+      >
+        <Button type="button" size="small" className="mb-2 mr-2" label="All" onClick={this.updateBadgeFilter('')}>
+          <Badge value={counters.threadDumpAll || 0}></Badge>
+        </Button>
+        <Button
+          type="button"
+          severity="success"
+          size="small"
+          className="mb-2 mr-2"
+          label="Runnable"
+          onClick={this.updateBadgeFilter('RUNNABLE')}
+        >
+          <Badge value={counters.threadDumpRunnable || 0}></Badge>
+        </Button>
+        <Button
+          type="button"
+          severity="info"
+          size="small"
+          className="mb-2 mr-2"
+          label="Waiting"
+          onClick={this.updateBadgeFilter('WAITING')}
+        >
+          <Badge value={counters.threadDumpWaiting || 0}></Badge>
+        </Button>
+        <Button
+          type="button"
+          severity="warning"
+          size="small"
+          className="mb-2 mr-2"
+          label="Timed Waiting"
+          onClick={this.updateBadgeFilter('TIMED_WAITING')}
+        >
+          <Badge value={counters.threadDumpTimedWaiting || 0}></Badge>
+        </Button>
+        <Button
+          type="button"
+          severity="danger"
+          size="small"
+          className="mb-2 mr-2"
+          label="Timed Waiting"
+          onClick={this.updateBadgeFilter('BLOCKED')}
+        >
+          <Badge value={counters.threadDumpBlocked || 0}></Badge>
+        </Button>
+        <div>
+          <InputText placeholder="Filter by Lock Name..." onChange={this.updateSearchFilter} />
+        </div>
+        <div className="p-2">
+          {filteredList
+            ? filteredList.map((threadDumpInfo, i) => (
+                <div key={`dump-${i}`}>
+                  <h5>
+                    <Badge className="mr-2" severity={this.getBadgeClass(threadDumpInfo.threadState)} value={threadDumpInfo.threadState} />
+                    {threadDumpInfo.threadName} (ID {threadDumpInfo.threadId})
+                  </h5>
+                  <ThreadItem threadDumpInfo={threadDumpInfo} />
+                  <div>
+                    <table className="l-table">
+                      <thead>
+                        <tr>
+                          <th>Blocked Time</th>
+                          <th>Blocked Count</th>
+                          <th>Waited Time</th>
+                          <th>Waited Count</th>
+                          <th>Lock Name</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr key={threadDumpInfo.lockName}>
+                          <td>{threadDumpInfo.blockedTime}</td>
+                          <td>{threadDumpInfo.blockedCount}</td>
+                          <td>{threadDumpInfo.waitedTime}</td>
+                          <td>{threadDumpInfo.waitedCount}</td>
+                          <td className="thread-dump-modal-lock" title={threadDumpInfo.lockName}>
+                            <code className="text-pink-500">{threadDumpInfo.lockName}</code>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))
+            : null}
+        </div>
+      </Dialog>
     );
   }
 }

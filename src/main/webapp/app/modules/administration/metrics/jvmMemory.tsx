@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextFormat } from 'react-jhipster';
-import { Progress } from 'reactstrap';
+import { ProgressBar } from 'primereact/progressbar';
 
 export interface IJvmMemoryProps {
   jvmMetrics: any;
@@ -11,7 +11,7 @@ export class JvmMemory extends React.Component<IJvmMemoryProps> {
   render() {
     const { jvmMetrics, wholeNumberFormat } = this.props;
     return (
-      <div>
+      <div className="l-metrics">
         <h3>Memory</h3>
         {Object.keys(jvmMetrics).map((key, index) => (
           <div key={index}>
@@ -30,11 +30,12 @@ export class JvmMemory extends React.Component<IJvmMemoryProps> {
               Committed : <TextFormat value={jvmMetrics[key].committed / 1048576} type="number" format={wholeNumberFormat} />M
             </div>
             {jvmMetrics[key].max !== -1 ? (
-              <Progress animated value={jvmMetrics[key].used} min="0" max={jvmMetrics[key].max} color="success">
-                <span>
-                  <TextFormat value={(jvmMetrics[key].used * 100) / jvmMetrics[key].max} type="number" format={wholeNumberFormat} />%
-                </span>
-              </Progress>
+              <ProgressBar
+                aria-valuenow={jvmMetrics[key].used}
+                aria-valuemin={0}
+                aria-valuemax={jvmMetrics[key].max}
+                value={Math.round((jvmMetrics[key].used * 100) / jvmMetrics[key].max)}
+              />
             ) : (
               ''
             )}

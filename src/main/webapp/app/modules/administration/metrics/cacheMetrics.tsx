@@ -1,6 +1,5 @@
 import React from 'react';
 import { TextFormat, nanToZero } from 'react-jhipster';
-import { Table } from 'reactstrap';
 
 export interface ICacheMetricsProps {
   cacheMetrics: any;
@@ -11,9 +10,9 @@ export class CacheMetrics extends React.Component<ICacheMetricsProps> {
   render() {
     const { cacheMetrics, twoDigitAfterPointFormat } = this.props;
     return (
-      <div>
+      <div className="grid min-w-96 grid-cols-1 items-start gap-5 overflow-auto">
         <h3>Cache statistics</h3>
-        <Table>
+        <table className="l-table">
           <thead>
             <tr>
               <th>Cache Name</th>
@@ -54,7 +53,7 @@ export class CacheMetrics extends React.Component<ICacheMetricsProps> {
               </tr>
             ))}
           </tbody>
-        </Table>
+        </table>
       </div>
     );
   }

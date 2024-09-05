@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Translate } from 'react-jhipster';
-import { Table, Badge, Col, Row, Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import { Translate, translate } from 'react-jhipster';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 import HealthModal from './health-modal';
 import { getSystemHealth } from '../administration.reducer';
+import { Button } from 'primereact/button';
+import { Badge } from 'primereact/badge';
 
 export const HealthPage = () => {
   const [healthObject, setHealthObject] = useState({});
@@ -14,6 +14,10 @@ export const HealthPage = () => {
 
   const health = useAppSelector(state => state.administration.health);
   const isFetching = useAppSelector(state => state.administration.loading);
+
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.administrationMenuItem, MenuItemsData.healthMenuItem]));
+  }, []);
 
   useEffect(() => {
     dispatch(getSystemHealth());
@@ -39,57 +43,53 @@ export const HealthPage = () => {
   const data = (health || {}).components || {};
 
   return (
-    <div>
+    <div className="l-card">
       <h2 id="health-page-heading" data-cy="healthPageHeading">
         <Translate contentKey="health.title">Health Checks</Translate>
       </h2>
       <p>
-        <Button onClick={fetchSystemHealth} color={isFetching ? 'btn btn-danger' : 'btn btn-primary'} disabled={isFetching}>
-          <FontAwesomeIcon icon="sync" />
-          &nbsp;
-          <Translate component="span" contentKey="health.refresh.button">
-            Refresh
-          </Translate>
-        </Button>
+        <Button
+          label={translate('health.refresh.button')}
+          className={isFetching ? 'p-button-dangerr' : ''}
+          icon={`pi ${isFetching ? 'pi-spin' : ''} pi-refresh`}
+          onClick={fetchSystemHealth}
+          disabled={isFetching}
+        />
       </p>
-      <Row>
-        <Col md="12">
-          <Table bordered aria-describedby="health-page-heading">
-            <thead>
-              <tr>
-                <th>
-                  <Translate contentKey="health.table.service">Service Name</Translate>
-                </th>
-                <th>
-                  <Translate contentKey="health.table.status">Status</Translate>
-                </th>
-                <th>
-                  <Translate contentKey="health.details.details">Details</Translate>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(data).map((configPropKey, configPropIndex) =>
-                configPropKey !== 'status' ? (
-                  <tr key={configPropIndex}>
-                    <td>{configPropKey}</td>
-                    <td>
-                      <Badge color={getBadgeType(data[configPropKey].status)}>{data[configPropKey].status}</Badge>
-                    </td>
-                    <td>
-                      {data[configPropKey].details ? (
-                        <a onClick={getSystemHealthInfo(configPropKey, data[configPropKey])}>
-                          <FontAwesomeIcon icon="eye" />
-                        </a>
-                      ) : null}
-                    </td>
-                  </tr>
-                ) : null,
-              )}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+      <div>
+        <table className="l-table">
+          <thead>
+            <tr>
+              <th>
+                <Translate contentKey="health.table.service">Service Name</Translate>
+              </th>
+              <th>
+                <Translate contentKey="health.table.status">Status</Translate>
+              </th>
+              <th>
+                <Translate contentKey="health.details.details">Details</Translate>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(data).map((configPropKey, configPropIndex) =>
+              configPropKey !== 'status' ? (
+                <tr key={configPropIndex}>
+                  <td>{configPropKey}</td>
+                  <td>
+                    <Badge severity={getBadgeType(data[configPropKey].status)} value={data[configPropKey].status} />
+                  </td>
+                  <td>
+                    {data[configPropKey].details ? (
+                      <Button icon="pi pi-eye" rounded text onClick={getSystemHealthInfo(configPropKey, data[configPropKey])} />
+                    ) : null}
+                  </td>
+                </tr>
+              ) : null,
+            )}
+          </tbody>
+        </table>
+      </div>
       {renderModal()}
     </div>
   );

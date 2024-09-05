@@ -1,7 +1,8 @@
 import React from 'react';
-import { TextFormat } from 'react-jhipster';
-import { Progress, Button } from 'reactstrap';
+
+import { ProgressBar } from 'primereact/progressbar';
 import ThreadsModal from './threads-modal';
+import { Button } from 'primereact/button';
 
 export interface IJvmThreadsProps {
   jvmThreads: any;
@@ -78,72 +79,52 @@ export class JvmThreads extends React.Component<IJvmThreadsProps, IJvmThreadsSta
     });
   };
 
-  handleClose = e => {
+  handleClose = () => {
+    console.log('Close');
     this.setState({
       showModal: false,
     });
   };
 
-  renderModal = () => <ThreadsModal handleClose={this.handleClose} showModal={this.state.showModal} threadDump={this.props.jvmThreads} />;
-
   render() {
-    const { wholeNumberFormat } = this.props;
     const { threadStats } = this.state;
     return (
-      <div>
+      <div className="l-metrics">
         <b>Threads</b> (Total: {threadStats.threadDumpAll}){' '}
         <p>
           <span>Runnable</span> {threadStats.threadDumpRunnable}
         </p>
-        <Progress animated min="0" value={threadStats.threadDumpRunnable} max={threadStats.threadDumpAll} color="success">
-          <span>
-            <TextFormat
-              value={(threadStats.threadDumpRunnable * 100) / threadStats.threadDumpAll}
-              type="number"
-              format={wholeNumberFormat}
-            />
-          </span>
-        </Progress>
+        <ProgressBar
+          value={(threadStats.threadDumpRunnable * 100) / threadStats.threadDumpAll}
+          displayValueTemplate={() => <>{`${threadStats.threadDumpRunnable}/${threadStats.threadDumpAll}`}</>}
+        />
         <p>
           <span>Timed Waiting</span> ({threadStats.threadDumpTimedWaiting})
         </p>
-        <Progress animated min="0" value={threadStats.threadDumpTimedWaiting} max={threadStats.threadDumpAll} color="warning">
-          <span>
-            <TextFormat
-              value={(threadStats.threadDumpTimedWaiting * 100) / threadStats.threadDumpAll}
-              type="number"
-              format={wholeNumberFormat}
-            />
-          </span>
-        </Progress>
+        <ProgressBar
+          value={(threadStats.threadDumpTimedWaiting * 100) / threadStats.threadDumpAll}
+          displayValueTemplate={() => <>{`${threadStats.threadDumpTimedWaiting}/${threadStats.threadDumpAll}`}</>}
+          color="#f97316"
+        />
         <p>
           <span>Waiting</span> ({threadStats.threadDumpWaiting})
         </p>
-        <Progress animated min="0" value={threadStats.threadDumpWaiting} max={threadStats.threadDumpAll} color="warning">
-          <span>
-            <TextFormat
-              value={(threadStats.threadDumpWaiting * 100) / threadStats.threadDumpAll}
-              type="number"
-              format={wholeNumberFormat}
-            />
-          </span>
-        </Progress>
+        <ProgressBar
+          value={(threadStats.threadDumpWaiting * 100) / threadStats.threadDumpAll}
+          displayValueTemplate={() => <>{`${threadStats.threadDumpWaiting}/${threadStats.threadDumpAll}`}</>}
+          color="#f97316"
+        />
         <p>
           <span>Blocked</span> ({threadStats.threadDumpBlocked})
         </p>
-        <Progress animated min="0" value={threadStats.threadDumpBlocked} max={threadStats.threadDumpAll} color="success">
-          <span>
-            <TextFormat
-              value={(threadStats.threadDumpBlocked * 100) / threadStats.threadDumpAll}
-              type="number"
-              format={wholeNumberFormat}
-            />
-          </span>
-        </Progress>
-        {this.renderModal()}
-        <Button color="primary" size="sm" className="hand" onClick={this.openModal}>
+        <ProgressBar
+          value={(threadStats.threadDumpBlocked * 100) / threadStats.threadDumpAll}
+          displayValueTemplate={() => <>{`${threadStats.threadDumpBlocked}/${threadStats.threadDumpAll}`}</>}
+        />
+        <Button size="small" onClick={this.openModal}>
           Expand
         </Button>
+        <ThreadsModal handleClose={this.handleClose} showModal={this.state.showModal} threadDump={this.props.jvmThreads} />
       </div>
     );
   }

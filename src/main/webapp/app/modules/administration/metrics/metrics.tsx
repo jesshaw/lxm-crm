@@ -1,29 +1,30 @@
 import React, { useEffect } from 'react';
-// import { Button, Col, Row } from 'reactstrap';
-import {
-  CacheMetrics,
-  DatasourceMetrics,
-  GarbageCollectorMetrics,
-  HttpRequestMetrics,
-  JvmMemory,
-  JvmThreads,
-  EndpointsRequestsMetrics,
-  SystemMetrics,
-  Translate,
-  translate,
-} from 'react-jhipster';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Translate, translate } from 'react-jhipster';
+import { CacheMetrics } from './cacheMetrics';
+import { DatasourceMetrics } from './datasourceMetrics';
+import { GarbageCollectorMetrics } from './garbageCollectorMetrics';
+import { HttpRequestMetrics } from './httpRequestMetrics';
+import { JvmThreads } from './jvmThreads';
+import { JvmMemory } from './jvmMemory';
+import { EndpointsRequestsMetrics } from './endpointsRequestsMetrics';
+import { SystemMetrics } from './systemMetrics';
 
 import { APP_TIMESTAMP_FORMAT, APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT, APP_WHOLE_NUMBER_FORMAT } from 'app/config/constants';
 import { getSystemMetrics, getSystemThreadDump } from '../administration.reducer';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 import { Button } from 'primereact/button';
+import { Divider } from 'primereact/divider';
 
 export const MetricsPage = () => {
   const dispatch = useAppDispatch();
   const metrics = useAppSelector(state => state.administration.metrics);
   const isFetching = useAppSelector(state => state.administration.loading);
   const threadDump = useAppSelector(state => state.administration.threadDump);
+
+  useEffect(() => {
+    dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.administrationMenuItem, MenuItemsData.metricsMenuItem]));
+  }, []);
 
   useEffect(() => {
     dispatch(getSystemMetrics());
@@ -38,7 +39,7 @@ export const MetricsPage = () => {
   };
 
   return (
-    <div>
+    <div className="l-card">
       <h2 id="metrics-page-heading" data-cy="metricsPageHeading">
         <Translate contentKey="metrics.title">Application Metrics</Translate>
       </h2>
@@ -50,9 +51,9 @@ export const MetricsPage = () => {
           disabled={isFetching}
         />
       </p>
-      <hr />
+      <Divider />
 
-      <div className="grid columns-1 md:columns-3">
+      <div className="grid columns-1 gap-5 md:columns-3">
         <h3 className="md:col-span-3">
           <Translate contentKey="metrics.jvm.title">JVM Metrics</Translate>
         </h3>
@@ -91,25 +92,17 @@ export const MetricsPage = () => {
         ''
       )}
 
-      {/* {metrics?.cache ? (
-        <Row>
-          <Col sm="12">
-            <CacheMetrics cacheMetrics={metrics.cache} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
-          </Col>
-        </Row>
+      {metrics?.cache ? (
+        <CacheMetrics cacheMetrics={metrics.cache} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
       ) : (
         ''
-      )} */}
+      )}
 
-      {/* {metrics?.databases && JSON.stringify(metrics.databases) !== '{}' ? (
-        <Row>
-          <Col sm="12">
-            <DatasourceMetrics datasourceMetrics={metrics.databases} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
-          </Col>
-        </Row>
+      {metrics?.databases && JSON.stringify(metrics.databases) !== '{}' ? (
+        <DatasourceMetrics datasourceMetrics={metrics.databases} twoDigitAfterPointFormat={APP_TWO_DIGITS_AFTER_POINT_NUMBER_FORMAT} />
       ) : (
         ''
-      )} */}
+      )}
     </div>
   );
 };

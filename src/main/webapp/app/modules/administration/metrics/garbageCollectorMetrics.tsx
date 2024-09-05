@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextFormat } from 'react-jhipster';
-import { Col, Progress, Row, Table } from 'reactstrap';
+import { ProgressBar } from 'primereact/progressbar';
 
 export interface IGarbageCollectorMetricsProps {
   garbageCollectorMetrics: any;
@@ -11,62 +11,42 @@ export class GarbageCollectorMetrics extends React.Component<IGarbageCollectorMe
   render() {
     const { garbageCollectorMetrics, wholeNumberFormat } = this.props;
     return (
-      <div>
-        <h3>Garbage Collection</h3>
-        <Row>
-          <Col md="4">
-            <span>
-              GC Live Data Size/GC Max Data Size (
-              <TextFormat value={garbageCollectorMetrics['jvm.gc.live.data.size'] / 1048576} type={'number'} format={wholeNumberFormat} />M
-              / <TextFormat value={garbageCollectorMetrics['jvm.gc.max.data.size'] / 1048576} type={'number'} format={wholeNumberFormat} />
-              M)
-            </span>
-            <Progress
-              animated
-              color="success"
-              value={(100 * garbageCollectorMetrics['jvm.gc.live.data.size']) / garbageCollectorMetrics['jvm.gc.max.data.size']}
-            >
-              <TextFormat
-                value={(100 * garbageCollectorMetrics['jvm.gc.live.data.size']) / garbageCollectorMetrics['jvm.gc.max.data.size']}
-                type={'number'}
-                format={wholeNumberFormat}
-              />
-              %
-            </Progress>
-          </Col>
-          <Col md="4">
-            <span>
-              GC Memory Promoted/GC Memory Allocated (
-              <TextFormat value={garbageCollectorMetrics['jvm.gc.memory.promoted'] / 1048576} type={'number'} format={wholeNumberFormat} />M
-              /{' '}
-              <TextFormat value={garbageCollectorMetrics['jvm.gc.memory.allocated'] / 1048576} type={'number'} format={wholeNumberFormat} />
-              M)
-            </span>
-            <Progress
-              animated
-              color="success"
-              value={(100 * garbageCollectorMetrics['jvm.gc.memory.promoted']) / garbageCollectorMetrics['jvm.gc.memory.allocated']}
-            >
-              <TextFormat
-                value={(100 * garbageCollectorMetrics['jvm.gc.memory.promoted']) / garbageCollectorMetrics['jvm.gc.memory.allocated']}
-                type={'number'}
-                format={wholeNumberFormat}
-              />
-              %
-            </Progress>
-          </Col>
-          <Col md="4">
-            <Row>
-              <Col md="9">Classes loaded</Col>
-              <Col md="3">{garbageCollectorMetrics.classesLoaded}</Col>
-            </Row>
-            <Row>
-              <Col md="9">Classes unloaded</Col>
-              <Col md="3">{garbageCollectorMetrics.classesUnloaded}</Col>
-            </Row>
-          </Col>
-        </Row>
-        <Table>
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <h3 className="md:col-span-3">Garbage Collection</h3>
+
+        <div>
+          <span>
+            GC Live Data Size/GC Max Data Size (
+            <TextFormat value={garbageCollectorMetrics['jvm.gc.live.data.size'] / 1048576} type={'number'} format={wholeNumberFormat} />M /{' '}
+            <TextFormat value={garbageCollectorMetrics['jvm.gc.max.data.size'] / 1048576} type={'number'} format={wholeNumberFormat} />
+            M)
+          </span>
+          <ProgressBar
+            aria-valuenow={(100 * garbageCollectorMetrics['jvm.gc.live.data.size']) / garbageCollectorMetrics['jvm.gc.max.data.size']}
+            value={Math.round((100 * garbageCollectorMetrics['jvm.gc.live.data.size']) / garbageCollectorMetrics['jvm.gc.max.data.size'])}
+          />
+        </div>
+        <div>
+          <span>
+            GC Memory Promoted/GC Memory Allocated (
+            <TextFormat value={garbageCollectorMetrics['jvm.gc.memory.promoted'] / 1048576} type={'number'} format={wholeNumberFormat} />M /{' '}
+            <TextFormat value={garbageCollectorMetrics['jvm.gc.memory.allocated'] / 1048576} type={'number'} format={wholeNumberFormat} />
+            M)
+          </span>
+          <ProgressBar
+            aria-valuenow={(100 * garbageCollectorMetrics['jvm.gc.memory.promoted']) / garbageCollectorMetrics['jvm.gc.memory.allocated']}
+            value={Math.round(
+              (100 * garbageCollectorMetrics['jvm.gc.memory.promoted']) / garbageCollectorMetrics['jvm.gc.memory.allocated'],
+            )}
+          />
+        </div>
+        <div className="grid grid-cols-6">
+          <div className="col-span-5">Classes loaded</div>
+          <div>{garbageCollectorMetrics.classesLoaded}</div>
+          <div className="col-span-5">Classes unloaded</div>
+          <div>{garbageCollectorMetrics.classesUnloaded}</div>
+        </div>
+        <table className="l-table md:col-span-3">
           <thead>
             <tr>
               <th />
@@ -109,7 +89,7 @@ export class GarbageCollectorMetrics extends React.Component<IGarbageCollectorMe
               </td>
             </tr>
           </tbody>
-        </Table>
+        </table>
       </div>
     );
   }
