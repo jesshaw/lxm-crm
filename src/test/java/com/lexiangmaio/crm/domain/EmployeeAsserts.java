@@ -58,7 +58,8 @@ public class EmployeeAsserts {
     public static void assertEmployeeUpdatableFieldsEquals(Employee expected, Employee actual) {
         assertThat(expected)
             .as("Verify Employee relevant properties")
-            .satisfies(e -> assertThat(e.getTitle()).as("check title").isEqualTo(actual.getTitle()));
+            .satisfies(e -> assertThat(e.getTitle()).as("check title").isEqualTo(actual.getTitle()))
+            .satisfies(e -> assertThat(e.getNickName()).as("check nickName").isEqualTo(actual.getNickName()));
     }
 
     /**
@@ -67,5 +68,9 @@ public class EmployeeAsserts {
      * @param expected the expected entity
      * @param actual the actual entity
      */
-    public static void assertEmployeeUpdatableRelationshipsEquals(Employee expected, Employee actual) {}
+    public static void assertEmployeeUpdatableRelationshipsEquals(Employee expected, Employee actual) {
+        assertThat(expected)
+            .as("Verify Employee relationships")
+            .satisfies(e -> assertThat(e.getReportsTo()).as("check reportsTo").isEqualTo(actual.getReportsTo()));
+    }
 }

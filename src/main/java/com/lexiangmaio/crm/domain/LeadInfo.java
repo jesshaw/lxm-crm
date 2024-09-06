@@ -25,13 +25,6 @@ public class LeadInfo implements Serializable {
     private Long id;
 
     /**
-     * 描述
-     */
-    @Lob
-    @Column(name = "description")
-    private String description;
-
-    /**
      * 称呼
      */
     @Size(max = 255)
@@ -259,6 +252,13 @@ public class LeadInfo implements Serializable {
     private LocalDate birthdate;
 
     /**
+     * 描述
+     */
+    @Lob
+    @Column(name = "description")
+    private String description;
+
+    /**
      * 汇报人
      */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -266,7 +266,7 @@ public class LeadInfo implements Serializable {
     private LeadInfo reportsTo;
 
     /**
-     * 汇报人
+     * 分派给
      */
     @ManyToOne(fetch = FetchType.LAZY)
     private User assignedUser;
@@ -284,19 +284,6 @@ public class LeadInfo implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public LeadInfo description(String description) {
-        this.setDescription(description);
-        return this;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getSalutation() {
@@ -728,6 +715,19 @@ public class LeadInfo implements Serializable {
         this.birthdate = birthdate;
     }
 
+    public String getDescription() {
+        return this.description;
+    }
+
+    public LeadInfo description(String description) {
+        this.setDescription(description);
+        return this;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public LeadInfo getReportsTo() {
         return this.reportsTo;
     }
@@ -778,7 +778,6 @@ public class LeadInfo implements Serializable {
     public String toString() {
         return "LeadInfo{" +
             "id=" + getId() +
-            ", description='" + getDescription() + "'" +
             ", salutation='" + getSalutation() + "'" +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
@@ -812,6 +811,7 @@ public class LeadInfo implements Serializable {
             ", status='" + getStatus() + "'" +
             ", statusDescription='" + getStatusDescription() + "'" +
             ", birthdate='" + getBirthdate() + "'" +
+            ", description='" + getDescription() + "'" +
             "}";
     }
 }

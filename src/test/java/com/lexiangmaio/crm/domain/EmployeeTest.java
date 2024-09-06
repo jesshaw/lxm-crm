@@ -1,6 +1,7 @@
 package com.lexiangmaio.crm.domain;
 
 import static com.lexiangmaio.crm.domain.EmployeeTestSamples.*;
+import static com.lexiangmaio.crm.domain.EmployeeTestSamples.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.lexiangmaio.crm.web.rest.TestUtil;
@@ -20,5 +21,17 @@ class EmployeeTest {
 
         employee2 = getEmployeeSample2();
         assertThat(employee1).isNotEqualTo(employee2);
+    }
+
+    @Test
+    void reportsToTest() throws Exception {
+        Employee employee = getEmployeeRandomSampleGenerator();
+        Employee employeeBack = getEmployeeRandomSampleGenerator();
+
+        employee.setReportsTo(employeeBack);
+        assertThat(employee.getReportsTo()).isEqualTo(employeeBack);
+
+        employee.reportsTo(null);
+        assertThat(employee.getReportsTo()).isNull();
     }
 }

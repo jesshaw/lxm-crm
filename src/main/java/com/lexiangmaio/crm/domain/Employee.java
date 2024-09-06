@@ -1,5 +1,6 @@
 package com.lexiangmaio.crm.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -31,10 +32,27 @@ public class Employee implements Serializable {
     @Column(name = "title", length = 50)
     private String title;
 
+    /**
+     * 昵称
+     */
+    @Schema(description = "昵称")
+    @Column(name = "nick_name")
+    private String nickName;
+
+    /**
+     * 登录用户
+     */
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "id")
     private User user;
+
+    /**
+     * 汇报
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value = { "user", "reportsTo" }, allowSetters = true)
+    private Employee reportsTo;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
@@ -64,6 +82,19 @@ public class Employee implements Serializable {
         this.title = title;
     }
 
+    public String getNickName() {
+        return this.nickName;
+    }
+
+    public Employee nickName(String nickName) {
+        this.setNickName(nickName);
+        return this;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public User getUser() {
         return this.user;
     }
@@ -74,6 +105,19 @@ public class Employee implements Serializable {
 
     public Employee user(User user) {
         this.setUser(user);
+        return this;
+    }
+
+    public Employee getReportsTo() {
+        return this.reportsTo;
+    }
+
+    public void setReportsTo(Employee employee) {
+        this.reportsTo = employee;
+    }
+
+    public Employee reportsTo(Employee employee) {
+        this.setReportsTo(employee);
         return this;
     }
 
@@ -102,6 +146,7 @@ public class Employee implements Serializable {
         return "Employee{" +
             "id=" + getId() +
             ", title='" + getTitle() + "'" +
+            ", nickName='" + getNickName() + "'" +
             "}";
     }
 }

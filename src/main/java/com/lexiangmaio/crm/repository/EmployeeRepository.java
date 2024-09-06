@@ -27,14 +27,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     }
 
     @Query(
-        value = "select employee from Employee employee left join fetch employee.user",
+        value = "select employee from Employee employee left join fetch employee.user left join fetch employee.reportsTo",
         countQuery = "select count(employee) from Employee employee"
     )
     Page<Employee> findAllWithToOneRelationships(Pageable pageable);
 
-    @Query("select employee from Employee employee left join fetch employee.user")
+    @Query("select employee from Employee employee left join fetch employee.user left join fetch employee.reportsTo")
     List<Employee> findAllWithToOneRelationships();
 
-    @Query("select employee from Employee employee left join fetch employee.user where employee.id =:id")
+    @Query("select employee from Employee employee left join fetch employee.user left join fetch employee.reportsTo where employee.id =:id")
     Optional<Employee> findOneWithToOneRelationships(@Param("id") Long id);
 }

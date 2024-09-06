@@ -1,7 +1,5 @@
 package com.lexiangmaio.crm.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -34,9 +32,16 @@ public class Resource implements Serializable {
     @Column(name = "name", length = 100)
     private String name;
 
+    /**
+     * 权限
+     */
+    @Schema(description = "权限")
     @Column(name = "permission")
     private String permission;
 
+    /**
+     * 角色
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     private Authority authority;
 

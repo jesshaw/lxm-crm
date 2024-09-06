@@ -46,9 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 @WithMockUser
 class LeadInfoResourceIT {
 
-    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
-
     private static final String DEFAULT_SALUTATION = "AAAAAAAAAA";
     private static final String UPDATED_SALUTATION = "BBBBBBBBBB";
 
@@ -150,6 +147,9 @@ class LeadInfoResourceIT {
     private static final LocalDate UPDATED_BIRTHDATE = LocalDate.now(ZoneId.systemDefault());
     private static final LocalDate SMALLER_BIRTHDATE = LocalDate.ofEpochDay(-1L);
 
+    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/lead-infos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -187,7 +187,6 @@ class LeadInfoResourceIT {
      */
     public static LeadInfo createEntity(EntityManager em) {
         LeadInfo leadInfo = new LeadInfo()
-            .description(DEFAULT_DESCRIPTION)
             .salutation(DEFAULT_SALUTATION)
             .firstName(DEFAULT_FIRST_NAME)
             .lastName(DEFAULT_LAST_NAME)
@@ -220,7 +219,8 @@ class LeadInfoResourceIT {
             .leadSourceDescription(DEFAULT_LEAD_SOURCE_DESCRIPTION)
             .status(DEFAULT_STATUS)
             .statusDescription(DEFAULT_STATUS_DESCRIPTION)
-            .birthdate(DEFAULT_BIRTHDATE);
+            .birthdate(DEFAULT_BIRTHDATE)
+            .description(DEFAULT_DESCRIPTION);
         return leadInfo;
     }
 
@@ -232,7 +232,6 @@ class LeadInfoResourceIT {
      */
     public static LeadInfo createUpdatedEntity(EntityManager em) {
         LeadInfo leadInfo = new LeadInfo()
-            .description(UPDATED_DESCRIPTION)
             .salutation(UPDATED_SALUTATION)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
@@ -265,7 +264,8 @@ class LeadInfoResourceIT {
             .leadSourceDescription(UPDATED_LEAD_SOURCE_DESCRIPTION)
             .status(UPDATED_STATUS)
             .statusDescription(UPDATED_STATUS_DESCRIPTION)
-            .birthdate(UPDATED_BIRTHDATE);
+            .birthdate(UPDATED_BIRTHDATE)
+            .description(UPDATED_DESCRIPTION);
         return leadInfo;
     }
 
@@ -326,7 +326,6 @@ class LeadInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(leadInfo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].salutation").value(hasItem(DEFAULT_SALUTATION)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
@@ -359,7 +358,8 @@ class LeadInfoResourceIT {
             .andExpect(jsonPath("$.[*].leadSourceDescription").value(hasItem(DEFAULT_LEAD_SOURCE_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
             .andExpect(jsonPath("$.[*].statusDescription").value(hasItem(DEFAULT_STATUS_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].birthdate").value(hasItem(DEFAULT_BIRTHDATE.toString())));
+            .andExpect(jsonPath("$.[*].birthdate").value(hasItem(DEFAULT_BIRTHDATE.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -391,7 +391,6 @@ class LeadInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(leadInfo.getId().intValue()))
-            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
             .andExpect(jsonPath("$.salutation").value(DEFAULT_SALUTATION))
             .andExpect(jsonPath("$.firstName").value(DEFAULT_FIRST_NAME))
             .andExpect(jsonPath("$.lastName").value(DEFAULT_LAST_NAME))
@@ -424,7 +423,8 @@ class LeadInfoResourceIT {
             .andExpect(jsonPath("$.leadSourceDescription").value(DEFAULT_LEAD_SOURCE_DESCRIPTION))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS))
             .andExpect(jsonPath("$.statusDescription").value(DEFAULT_STATUS_DESCRIPTION))
-            .andExpect(jsonPath("$.birthdate").value(DEFAULT_BIRTHDATE.toString()));
+            .andExpect(jsonPath("$.birthdate").value(DEFAULT_BIRTHDATE.toString()))
+            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()));
     }
 
     @Test
@@ -2339,7 +2339,6 @@ class LeadInfoResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(leadInfo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
             .andExpect(jsonPath("$.[*].salutation").value(hasItem(DEFAULT_SALUTATION)))
             .andExpect(jsonPath("$.[*].firstName").value(hasItem(DEFAULT_FIRST_NAME)))
             .andExpect(jsonPath("$.[*].lastName").value(hasItem(DEFAULT_LAST_NAME)))
@@ -2372,7 +2371,8 @@ class LeadInfoResourceIT {
             .andExpect(jsonPath("$.[*].leadSourceDescription").value(hasItem(DEFAULT_LEAD_SOURCE_DESCRIPTION)))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)))
             .andExpect(jsonPath("$.[*].statusDescription").value(hasItem(DEFAULT_STATUS_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].birthdate").value(hasItem(DEFAULT_BIRTHDATE.toString())));
+            .andExpect(jsonPath("$.[*].birthdate").value(hasItem(DEFAULT_BIRTHDATE.toString())))
+            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())));
 
         // Check, that the count call also returns 1
         restLeadInfoMockMvc
@@ -2421,7 +2421,6 @@ class LeadInfoResourceIT {
         // Disconnect from session so that the updates on updatedLeadInfo are not directly saved in db
         em.detach(updatedLeadInfo);
         updatedLeadInfo
-            .description(UPDATED_DESCRIPTION)
             .salutation(UPDATED_SALUTATION)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
@@ -2454,7 +2453,8 @@ class LeadInfoResourceIT {
             .leadSourceDescription(UPDATED_LEAD_SOURCE_DESCRIPTION)
             .status(UPDATED_STATUS)
             .statusDescription(UPDATED_STATUS_DESCRIPTION)
-            .birthdate(UPDATED_BIRTHDATE);
+            .birthdate(UPDATED_BIRTHDATE)
+            .description(UPDATED_DESCRIPTION);
         LeadInfoDto leadInfoDto = leadInfoMapper.toDto(updatedLeadInfo);
 
         restLeadInfoMockMvc
@@ -2545,21 +2545,21 @@ class LeadInfoResourceIT {
         partialUpdatedLeadInfo.setId(leadInfo.getId());
 
         partialUpdatedLeadInfo
-            .description(UPDATED_DESCRIPTION)
             .salutation(UPDATED_SALUTATION)
             .firstName(UPDATED_FIRST_NAME)
-            .phoneMobile(UPDATED_PHONE_MOBILE)
+            .lastName(UPDATED_LAST_NAME)
             .phoneWork(UPDATED_PHONE_WORK)
-            .lawfulBasis(UPDATED_LAWFUL_BASIS)
+            .phoneOther(UPDATED_PHONE_OTHER)
             .lawfulBasisSource(UPDATED_LAWFUL_BASIS_SOURCE)
             .primaryAddressStreet(UPDATED_PRIMARY_ADDRESS_STREET)
-            .primaryAddressPostalcode(UPDATED_PRIMARY_ADDRESS_POSTALCODE)
-            .converted(UPDATED_CONVERTED)
+            .primaryAddressCity(UPDATED_PRIMARY_ADDRESS_CITY)
+            .primaryAddressCountry(UPDATED_PRIMARY_ADDRESS_COUNTRY)
             .referedBy(UPDATED_REFERED_BY)
             .leadSource(UPDATED_LEAD_SOURCE)
             .leadSourceDescription(UPDATED_LEAD_SOURCE_DESCRIPTION)
             .status(UPDATED_STATUS)
-            .birthdate(UPDATED_BIRTHDATE);
+            .statusDescription(UPDATED_STATUS_DESCRIPTION)
+            .description(UPDATED_DESCRIPTION);
 
         restLeadInfoMockMvc
             .perform(
@@ -2588,7 +2588,6 @@ class LeadInfoResourceIT {
         partialUpdatedLeadInfo.setId(leadInfo.getId());
 
         partialUpdatedLeadInfo
-            .description(UPDATED_DESCRIPTION)
             .salutation(UPDATED_SALUTATION)
             .firstName(UPDATED_FIRST_NAME)
             .lastName(UPDATED_LAST_NAME)
@@ -2621,7 +2620,8 @@ class LeadInfoResourceIT {
             .leadSourceDescription(UPDATED_LEAD_SOURCE_DESCRIPTION)
             .status(UPDATED_STATUS)
             .statusDescription(UPDATED_STATUS_DESCRIPTION)
-            .birthdate(UPDATED_BIRTHDATE);
+            .birthdate(UPDATED_BIRTHDATE)
+            .description(UPDATED_DESCRIPTION);
 
         restLeadInfoMockMvc
             .perform(

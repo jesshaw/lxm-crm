@@ -47,7 +47,6 @@ public class LeadInfoAsserts {
     public static void assertLeadInfoUpdatableFieldsEquals(LeadInfo expected, LeadInfo actual) {
         assertThat(expected)
             .as("Verify LeadInfo relevant properties")
-            .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()))
             .satisfies(e -> assertThat(e.getSalutation()).as("check salutation").isEqualTo(actual.getSalutation()))
             .satisfies(e -> assertThat(e.getFirstName()).as("check firstName").isEqualTo(actual.getFirstName()))
             .satisfies(e -> assertThat(e.getLastName()).as("check lastName").isEqualTo(actual.getLastName()))
@@ -95,7 +94,8 @@ public class LeadInfoAsserts {
             )
             .satisfies(e -> assertThat(e.getStatus()).as("check status").isEqualTo(actual.getStatus()))
             .satisfies(e -> assertThat(e.getStatusDescription()).as("check statusDescription").isEqualTo(actual.getStatusDescription()))
-            .satisfies(e -> assertThat(e.getBirthdate()).as("check birthdate").isEqualTo(actual.getBirthdate()));
+            .satisfies(e -> assertThat(e.getBirthdate()).as("check birthdate").isEqualTo(actual.getBirthdate()))
+            .satisfies(e -> assertThat(e.getDescription()).as("check description").isEqualTo(actual.getDescription()));
     }
 
     /**

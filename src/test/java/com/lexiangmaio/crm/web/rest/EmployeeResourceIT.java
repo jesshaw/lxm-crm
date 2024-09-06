@@ -45,6 +45,9 @@ class EmployeeResourceIT {
     private static final String DEFAULT_TITLE = "AAAAAAAAAA";
     private static final String UPDATED_TITLE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_NICK_NAME = "AAAAAAAAAA";
+    private static final String UPDATED_NICK_NAME = "BBBBBBBBBB";
+
     private static final String ENTITY_API_URL = "/api/employees";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -78,7 +81,7 @@ class EmployeeResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Employee createEntity(EntityManager em) {
-        Employee employee = new Employee().title(DEFAULT_TITLE);
+        Employee employee = new Employee().title(DEFAULT_TITLE).nickName(DEFAULT_NICK_NAME);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -94,7 +97,7 @@ class EmployeeResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Employee createUpdatedEntity(EntityManager em) {
-        Employee employee = new Employee().title(UPDATED_TITLE);
+        Employee employee = new Employee().title(UPDATED_TITLE).nickName(UPDATED_NICK_NAME);
         // Add required entity
         User user = UserResourceIT.createEntity(em);
         em.persist(user);
@@ -198,7 +201,8 @@ class EmployeeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(employee.getId().intValue())))
-            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)));
+            .andExpect(jsonPath("$.[*].title").value(hasItem(DEFAULT_TITLE)))
+            .andExpect(jsonPath("$.[*].nickName").value(hasItem(DEFAULT_NICK_NAME)));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -230,7 +234,8 @@ class EmployeeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(employee.getId().intValue()))
-            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE));
+            .andExpect(jsonPath("$.title").value(DEFAULT_TITLE))
+            .andExpect(jsonPath("$.nickName").value(DEFAULT_NICK_NAME));
     }
 
     @Test
@@ -252,7 +257,7 @@ class EmployeeResourceIT {
         Employee updatedEmployee = employeeRepository.findById(employee.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedEmployee are not directly saved in db
         em.detach(updatedEmployee);
-        updatedEmployee.title(UPDATED_TITLE);
+        updatedEmployee.title(UPDATED_TITLE).nickName(UPDATED_NICK_NAME);
 
         restEmployeeMockMvc
             .perform(
@@ -330,6 +335,8 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
+        partialUpdatedEmployee.nickName(UPDATED_NICK_NAME);
+
         restEmployeeMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedEmployee.getId())
@@ -356,7 +363,7 @@ class EmployeeResourceIT {
         Employee partialUpdatedEmployee = new Employee();
         partialUpdatedEmployee.setId(employee.getId());
 
-        partialUpdatedEmployee.title(UPDATED_TITLE);
+        partialUpdatedEmployee.title(UPDATED_TITLE).nickName(UPDATED_NICK_NAME);
 
         restEmployeeMockMvc
             .perform(

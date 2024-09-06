@@ -14,9 +14,6 @@
             <column name="id" type="bigint" autoIncrement="true" startWith="1500">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="description" type="${clobType}" remarks="描述">
-                <constraints nullable="true" />
-            </column>
             <column name="salutation" type="varchar(255)" remarks="称呼">
                 <constraints nullable="true" />
             </column>
@@ -116,6 +113,9 @@
             <column name="birthdate" type="date" remarks="生日">
                 <constraints nullable="true" />
             </column>
+            <column name="description" type="${clobType}" remarks="描述">
+                <constraints nullable="true" />
+            </column>
             <column name="reports_to_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -143,7 +143,6 @@
                   tableName="lead_info"
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
-            <column name="description" type="clob"/>
             <column name="salutation" type="string"/>
             <column name="first_name" type="string"/>
             <column name="last_name" type="string"/>
@@ -177,6 +176,7 @@
             <column name="status" type="string"/>
             <column name="status_description" type="string"/>
             <column name="birthdate" type="date"/>
+            <column name="description" type="clob"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

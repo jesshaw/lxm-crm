@@ -17,5 +17,12 @@
                                  referencedTableName="lxm_user"
                                  onDelete="CASCADE"
                                  />
+
+        <addForeignKeyConstraint baseColumnNames="reports_to_id"
+                                 baseTableName="employee"
+                                 constraintName="fk_employee__reports_to_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="employee"
+                                 />
     </changeSet>
 </databaseChangeLog>

@@ -16,9 +16,6 @@ public class LeadInfoDto implements Serializable {
 
     private Long id;
 
-    @Lob
-    private String description;
-
     @Size(max = 255)
     private String salutation;
 
@@ -114,6 +111,9 @@ public class LeadInfoDto implements Serializable {
 
     private LocalDate birthdate;
 
+    @Lob
+    private String description;
+
     private LeadInfoDto reportsTo;
 
     private UserDto assignedUser;
@@ -124,14 +124,6 @@ public class LeadInfoDto implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getSalutation() {
@@ -398,6 +390,14 @@ public class LeadInfoDto implements Serializable {
         this.birthdate = birthdate;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public LeadInfoDto getReportsTo() {
         return reportsTo;
     }
@@ -440,7 +440,6 @@ public class LeadInfoDto implements Serializable {
     public String toString() {
         return "LeadInfoDto{" +
             "id=" + getId() +
-            ", description='" + getDescription() + "'" +
             ", salutation='" + getSalutation() + "'" +
             ", firstName='" + getFirstName() + "'" +
             ", lastName='" + getLastName() + "'" +
@@ -474,6 +473,7 @@ public class LeadInfoDto implements Serializable {
             ", status='" + getStatus() + "'" +
             ", statusDescription='" + getStatusDescription() + "'" +
             ", birthdate='" + getBirthdate() + "'" +
+            ", description='" + getDescription() + "'" +
             ", reportsTo=" + getReportsTo() +
             ", assignedUser=" + getAssignedUser() +
             "}";

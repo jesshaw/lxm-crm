@@ -139,6 +139,9 @@ public class EmployeeResource {
                 if (employee.getTitle() != null) {
                     existingEmployee.setTitle(employee.getTitle());
                 }
+                if (employee.getNickName() != null) {
+                    existingEmployee.setNickName(employee.getNickName());
+                }
 
                 return existingEmployee;
             })

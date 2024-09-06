@@ -17,7 +17,7 @@
             <column name="name" type="varchar(100)" remarks="资原名">
                 <constraints nullable="true" />
             </column>
-            <column name="permission" type="varchar(255)">
+            <column name="permission" type="varchar(255)" remarks="权限">
                 <constraints nullable="true" />
             </column>
             <column name="authority_name" type="varchar(50)">
