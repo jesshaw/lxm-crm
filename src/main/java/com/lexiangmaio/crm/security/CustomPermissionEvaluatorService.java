@@ -1,14 +1,10 @@
 package com.lexiangmaio.crm.security;
 
 import com.lexiangmaio.crm.domain.Resource;
-import java.util.Optional;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 @Component("lxmAuth")
@@ -24,9 +20,9 @@ public class CustomPermissionEvaluatorService {
     /**
      * Evaluates permission for the given resource and access
      *
-     * @param resource
-     * @param access
-     * @return
+     * @param resource resource name
+     * @param access permission
+     * @return has permission
      */
     public boolean hasPermission(String resource, String access) {
         CustomUserDetails user = getCurrentUser();
@@ -35,34 +31,22 @@ public class CustomPermissionEvaluatorService {
 
     /**
      * get the current user token from spring SecurityContextHolder
-     * @return
+     * @return CustomUserDetails
      */
     private CustomUserDetails getCurrentUser() {
-        // 暂时是从DB取数，后续可优化
+        // TODO: 2024/9/9 Currently fetching data from the DB, can be optimized later
         return SecurityUtils.getCurrentUserLogin()
             .map(login -> (CustomUserDetails) domainUserDetailsService.loadUserByUsername(login))
             .orElseThrow(() -> new AccessDeniedException("No Valid User Found"));
-        //        Optional<String> login = SecurityUtils.getCurrentUserLogin();
-        //        if (login.isPresent()) {
-        //            return (CustomUserDetails) domainUserDetailsService.loadUserByUsername(login.get());
-        //        } else {
-        //            throw new AccessDeniedException("No Valid User Found");
-        //        }
-        //        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        //        if (auth.getPrincipal() instanceof UserDetails) {
-        //            return (CustomUserDetails) auth.getPrincipal();
-        //        } else {
-        //            throw new AccessDeniedException("No Valid User Found");
-        //        }
     }
 
     /**
      * checks if the resource has grants in any roles for the user
      *
-     * @param user
-     * @param access
-     * @param resourceName
-     * @return
+     * @param user current user
+     * @param access permission
+     * @param resourceName resource name
+     * @return has access permission
      */
     private boolean hasAccessToResource(CustomUserDetails user, String access, String resourceName) {
         final boolean[] hasAccess = { false };
@@ -79,10 +63,10 @@ public class CustomPermissionEvaluatorService {
     }
 
     /**
-     * @param resource
-     * @param resourceName
-     * @param access
-     * @return
+     * @param resource resource entity
+     * @param resourceName resource name
+     * @param access permission
+     * @return has grant resource permission
      */
     private boolean hasGrants(Resource resource, String resourceName, String access) {
         if (!resourceName.equals(resource.getName())) return false;

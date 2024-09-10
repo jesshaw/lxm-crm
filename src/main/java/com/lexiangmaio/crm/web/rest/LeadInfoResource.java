@@ -1,6 +1,8 @@
 package com.lexiangmaio.crm.web.rest;
 
 import com.lexiangmaio.crm.repository.LeadInfoRepository;
+import com.lexiangmaio.crm.security.PermissionConstants;
+import com.lexiangmaio.crm.security.ResourceConstants;
 import com.lexiangmaio.crm.service.LeadInfoQueryService;
 import com.lexiangmaio.crm.service.LeadInfoService;
 import com.lexiangmaio.crm.service.criteria.LeadInfoCriteria;
@@ -20,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -33,7 +36,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/lead-infos")
 public class LeadInfoResource {
 
-    private final Logger log = LoggerFactory.getLogger(LeadInfoResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LeadInfoResource.class);
 
     private static final String ENTITY_NAME = "leadInfo";
 
@@ -64,8 +67,9 @@ public class LeadInfoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<LeadInfoDto> createLeadInfo(@Valid @RequestBody LeadInfoDto leadInfoDto) throws URISyntaxException {
-        log.debug("REST request to save LeadInfo : {}", leadInfoDto);
+        LOG.debug("REST request to save LeadInfo : {}", leadInfoDto);
         if (leadInfoDto.getId() != null) {
             throw new BadRequestAlertException("A new leadInfo cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -86,11 +90,12 @@ public class LeadInfoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<LeadInfoDto> updateLeadInfo(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody LeadInfoDto leadInfoDto
     ) throws URISyntaxException {
-        log.debug("REST request to update LeadInfo : {}, {}", id, leadInfoDto);
+        LOG.debug("REST request to update LeadInfo : {}, {}", id, leadInfoDto);
         if (leadInfoDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -120,11 +125,12 @@ public class LeadInfoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<LeadInfoDto> partialUpdateLeadInfo(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody LeadInfoDto leadInfoDto
     ) throws URISyntaxException {
-        log.debug("REST request to partial update LeadInfo partially : {}, {}", id, leadInfoDto);
+        LOG.debug("REST request to partial update LeadInfo partially : {}, {}", id, leadInfoDto);
         if (leadInfoDto.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -137,7 +143,6 @@ public class LeadInfoResource {
         }
 
         Optional<LeadInfoDto> result = leadInfoService.partialUpdate(leadInfoDto);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, leadInfoDto.getId().toString())
@@ -152,11 +157,12 @@ public class LeadInfoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of leadInfos in body.
      */
     @GetMapping("")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.LIST + "\")")
     public ResponseEntity<List<LeadInfoDto>> getAllLeadInfos(
         LeadInfoCriteria criteria,
         @org.springdoc.core.annotations.ParameterObject Pageable pageable
     ) {
-        log.debug("REST request to get LeadInfos by criteria: {}", criteria);
+        LOG.debug("REST request to get LeadInfos by criteria: {}", criteria);
 
         Page<LeadInfoDto> page = leadInfoQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -170,8 +176,9 @@ public class LeadInfoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
      */
     @GetMapping("/count")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.LIST + "\")")
     public ResponseEntity<Long> countLeadInfos(LeadInfoCriteria criteria) {
-        log.debug("REST request to count LeadInfos by criteria: {}", criteria);
+        LOG.debug("REST request to count LeadInfos by criteria: {}", criteria);
         return ResponseEntity.ok().body(leadInfoQueryService.countByCriteria(criteria));
     }
 
@@ -182,8 +189,9 @@ public class LeadInfoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the leadInfoDto, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.VIEW + "\")")
     public ResponseEntity<LeadInfoDto> getLeadInfo(@PathVariable("id") Long id) {
-        log.debug("REST request to get LeadInfo : {}", id);
+        LOG.debug("REST request to get LeadInfo : {}", id);
         Optional<LeadInfoDto> leadInfoDto = leadInfoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(leadInfoDto);
     }
@@ -195,8 +203,9 @@ public class LeadInfoResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.LEAD_INFO + "\",\"" + PermissionConstants.DELETE + "\")")
     public ResponseEntity<Void> deleteLeadInfo(@PathVariable("id") Long id) {
-        log.debug("REST request to delete LeadInfo : {}", id);
+        LOG.debug("REST request to delete LeadInfo : {}", id);
         leadInfoService.delete(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

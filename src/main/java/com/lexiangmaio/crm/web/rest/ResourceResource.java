@@ -2,6 +2,8 @@ package com.lexiangmaio.crm.web.rest;
 
 import com.lexiangmaio.crm.domain.Resource;
 import com.lexiangmaio.crm.repository.ResourceRepository;
+import com.lexiangmaio.crm.security.PermissionConstants;
+import com.lexiangmaio.crm.security.ResourceConstants;
 import com.lexiangmaio.crm.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
@@ -27,7 +30,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class ResourceResource {
 
-    private final Logger log = LoggerFactory.getLogger(ResourceResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceResource.class);
 
     private static final String ENTITY_NAME = "resource";
 
@@ -48,8 +51,15 @@ public class ResourceResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.EDIT +
+        "\")"
+    )
     public ResponseEntity<Resource> createResource(@Valid @RequestBody Resource resource) throws URISyntaxException {
-        log.debug("REST request to save Resource : {}", resource);
+        LOG.debug("REST request to save Resource : {}", resource);
         if (resource.getId() != null) {
             throw new BadRequestAlertException("A new resource cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -70,11 +80,18 @@ public class ResourceResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.EDIT +
+        "\")"
+    )
     public ResponseEntity<Resource> updateResource(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Resource resource
     ) throws URISyntaxException {
-        log.debug("REST request to update Resource : {}, {}", id, resource);
+        LOG.debug("REST request to update Resource : {}, {}", id, resource);
         if (resource.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -104,11 +121,18 @@ public class ResourceResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.EDIT +
+        "\")"
+    )
     public ResponseEntity<Resource> partialUpdateResource(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Resource resource
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Resource partially : {}, {}", id, resource);
+        LOG.debug("REST request to partial update Resource partially : {}, {}", id, resource);
         if (resource.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -133,7 +157,6 @@ public class ResourceResource {
                 return existingResource;
             })
             .map(resourceRepository::save);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, resource.getId().toString())
@@ -146,8 +169,15 @@ public class ResourceResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of resources in body.
      */
     @GetMapping("")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.LIST +
+        "\")"
+    )
     public List<Resource> getAllResources() {
-        log.debug("REST request to get all Resources");
+        LOG.debug("REST request to get all Resources");
         return resourceRepository.findAll();
     }
 
@@ -158,8 +188,15 @@ public class ResourceResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the resource, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.VIEW +
+        "\")"
+    )
     public ResponseEntity<Resource> getResource(@PathVariable("id") Long id) {
-        log.debug("REST request to get Resource : {}", id);
+        LOG.debug("REST request to get Resource : {}", id);
         Optional<Resource> resource = resourceRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(resource);
     }
@@ -171,8 +208,15 @@ public class ResourceResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.RESOURCE +
+        "\",\"" +
+        PermissionConstants.DELETE +
+        "\")"
+    )
     public ResponseEntity<Void> deleteResource(@PathVariable("id") Long id) {
-        log.debug("REST request to delete Resource : {}", id);
+        LOG.debug("REST request to delete Resource : {}", id);
         resourceRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))

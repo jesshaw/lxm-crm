@@ -1,6 +1,7 @@
 {
   "annotations": {
     "changelogDate": "20240521040136",
+    "entityAuthority": "ROLE_ADMIN",
     "readonly": true
   },
   "applications": ["lxmcrm"],

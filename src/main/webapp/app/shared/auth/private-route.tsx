@@ -39,11 +39,14 @@ export const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwn
     );
   }
 
+  const searchParams = new URLSearchParams(location.search);
+  searchParams.set('r', location.pathname);
+
   return (
     <Navigate
       to={{
         pathname: '/login',
-        search: pageLocation.search,
+        search: `?${searchParams.toString()}`,
       }}
       replace
       state={{ from: pageLocation }}

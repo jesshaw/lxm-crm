@@ -2,6 +2,8 @@ package com.lexiangmaio.crm.web.rest;
 
 import com.lexiangmaio.crm.domain.Authority;
 import com.lexiangmaio.crm.repository.AuthorityRepository;
+import com.lexiangmaio.crm.security.PermissionConstants;
+import com.lexiangmaio.crm.security.ResourceConstants;
 import com.lexiangmaio.crm.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -26,7 +28,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class AuthorityResource {
 
-    private final Logger log = LoggerFactory.getLogger(AuthorityResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AuthorityResource.class);
 
     private static final String ENTITY_NAME = "adminAuthority";
 
@@ -47,9 +49,15 @@ public class AuthorityResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.AUTHORITY +
+        "\",\"" +
+        PermissionConstants.EDIT +
+        "\")"
+    )
     public ResponseEntity<Authority> createAuthority(@Valid @RequestBody Authority authority) throws URISyntaxException {
-        log.debug("REST request to save Authority : {}", authority);
+        LOG.debug("REST request to save Authority : {}", authority);
         if (authorityRepository.existsById(authority.getName())) {
             throw new BadRequestAlertException("authority already exists", ENTITY_NAME, "idexists");
         }
@@ -65,9 +73,15 @@ public class AuthorityResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authorities in body.
      */
     @GetMapping("")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.AUTHORITY +
+        "\",\"" +
+        PermissionConstants.LIST +
+        "\")"
+    )
     public List<Authority> getAllAuthorities() {
-        log.debug("REST request to get all Authorities");
+        LOG.debug("REST request to get all Authorities");
         return authorityRepository.findAll();
     }
 
@@ -78,9 +92,15 @@ public class AuthorityResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the authority, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.AUTHORITY +
+        "\",\"" +
+        PermissionConstants.VIEW +
+        "\")"
+    )
     public ResponseEntity<Authority> getAuthority(@PathVariable("id") String id) {
-        log.debug("REST request to get Authority : {}", id);
+        LOG.debug("REST request to get Authority : {}", id);
         Optional<Authority> authority = authorityRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(authority);
     }
@@ -92,9 +112,15 @@ public class AuthorityResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    @PreAuthorize(
+        "hasAnyAuthority('ROLE_ADMIN') || @lxmAuth.hasPermission(\"" +
+        ResourceConstants.AUTHORITY +
+        "\",\"" +
+        PermissionConstants.DELETE +
+        "\")"
+    )
     public ResponseEntity<Void> deleteAuthority(@PathVariable("id") String id) {
-        log.debug("REST request to delete Authority : {}", id);
+        LOG.debug("REST request to delete Authority : {}", id);
         authorityRepository.deleteById(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
     }

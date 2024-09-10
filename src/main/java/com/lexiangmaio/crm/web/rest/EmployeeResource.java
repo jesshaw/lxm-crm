@@ -31,7 +31,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @Transactional
 public class EmployeeResource {
 
-    private final Logger log = LoggerFactory.getLogger(EmployeeResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EmployeeResource.class);
 
     private static final String ENTITY_NAME = "employee";
 
@@ -55,8 +55,9 @@ public class EmployeeResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<Employee> createEmployee(@Valid @RequestBody Employee employee) throws URISyntaxException {
-        log.debug("REST request to save Employee : {}", employee);
+        LOG.debug("REST request to save Employee : {}", employee);
         if (employee.getId() != null) {
             throw new BadRequestAlertException("A new employee cannot already have an ID", ENTITY_NAME, "idexists");
         }
@@ -87,7 +88,7 @@ public class EmployeeResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Employee employee
     ) throws URISyntaxException {
-        log.debug("REST request to update Employee : {}, {}", id, employee);
+        LOG.debug("REST request to update Employee : {}, {}", id, employee);
         if (employee.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -117,11 +118,12 @@ public class EmployeeResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.EDIT + "\")")
     public ResponseEntity<Employee> partialUpdateEmployee(
         @PathVariable(value = "id", required = false) final Long id,
         @NotNull @RequestBody Employee employee
     ) throws URISyntaxException {
-        log.debug("REST request to partial update Employee partially : {}, {}", id, employee);
+        LOG.debug("REST request to partial update Employee partially : {}, {}", id, employee);
         if (employee.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -146,7 +148,6 @@ public class EmployeeResource {
                 return existingEmployee;
             })
             .map(employeeRepository::save);
-
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, employee.getId().toString())
@@ -161,8 +162,9 @@ public class EmployeeResource {
      */
     @GetMapping("")
     @Transactional(readOnly = true)
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.LIST + "\")")
     public List<Employee> getAllEmployees(@RequestParam(name = "eagerload", required = false, defaultValue = "true") boolean eagerload) {
-        log.debug("REST request to get all Employees");
+        LOG.debug("REST request to get all Employees");
         if (eagerload) {
             return employeeRepository.findAllWithEagerRelationships();
         } else {
@@ -178,8 +180,9 @@ public class EmployeeResource {
      */
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.VIEW + "\")")
     public ResponseEntity<Employee> getEmployee(@PathVariable("id") Long id) {
-        log.debug("REST request to get Employee : {}", id);
+        LOG.debug("REST request to get Employee : {}", id);
         Optional<Employee> employee = employeeRepository.findOneWithEagerRelationships(id);
         return ResponseUtil.wrapOrNotFound(employee);
     }
@@ -191,8 +194,9 @@ public class EmployeeResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("@lxmAuth.hasPermission(\"" + ResourceConstants.EMPLOYEE + "\",\"" + PermissionConstants.DELETE + "\")")
     public ResponseEntity<Void> deleteEmployee(@PathVariable("id") Long id) {
-        log.debug("REST request to delete Employee : {}", id);
+        LOG.debug("REST request to delete Employee : {}", id);
         employeeRepository.deleteById(id);
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
