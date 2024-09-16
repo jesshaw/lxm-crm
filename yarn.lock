@@ -5918,8 +5918,10 @@ functions-have-names@^1.2.3:
   resolved "https://registry.npmmirror.com/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-"generator-jhipster-chimera@file:../generator-jhipster-chimera":
-  version "1.0.0"
+generator-jhipster-chimera@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmmirror.com/generator-jhipster-chimera/-/generator-jhipster-chimera-1.1.0.tgz#f3e5af6463425b25cc07bb2ec8e6cd419464d036"
+  integrity sha512-K+CBqJ1naURrk04ZH5cOgb6JoZWLbmGySW2FKkC7gcdaBLyu2LkJdesTVRKFMmrAmvjUVm7VebFbThID+1UKYQ==
   dependencies:
     generator-jhipster "8.3.0"
 
