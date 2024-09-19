@@ -1419,6 +1419,11 @@
   resolved "https://registry.npmmirror.com/@jsonjoy.com/util/-/util-1.3.0.tgz#e5623885bb5e0c48c1151e4dae422fb03a5887a1"
   integrity sha512-Cebt4Vk7k1xHy87kHY7KSPLT77A7Ev7IfOblyLZhtYEhrdQ6fX4EoLq3xOQ3O/DRMEh2ok5nyC180E+ABS8Wmw==
 
+"@kurkle/color@^0.3.0":
+  version "0.3.2"
+  resolved "https://registry.npmmirror.com/@kurkle/color/-/color-0.3.2.tgz#5acd38242e8bde4f9986e7913c8fdf49d3aa199f"
+  integrity sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==
+
 "@kwsites/file-exists@^1.1.1":
   version "1.1.1"
   resolved "https://registry.npmmirror.com/@kwsites/file-exists/-/file-exists-1.1.1.tgz"
@@ -3674,6 +3679,13 @@ chardet@^0.7.0:
   resolved "https://registry.npmmirror.com/chardet/-/chardet-0.7.0.tgz"
   integrity sha512-mT8iDcrh03qDGRRmoA2hmBJnxpllMR+0/0qlzjqZES6NdiWDcZkCNAk4rPFZ9Q85r27unkiNNg8ZOiwZXBHwcA==
 
+chart.js@4.4.3:
+  version "4.4.3"
+  resolved "https://registry.npmmirror.com/chart.js/-/chart.js-4.4.3.tgz#3b2e11e7010fefa99b07d0349236f5098e5226ad"
+  integrity sha512-qK1gkGSRYcJzqrrzdR6a+I0vQ4/R+SoODXyAjscQ/4mzuNzySaMCd+hyVxitSY1+L2fjPD1Gbn+ibNqRmwQeLw==
+  dependencies:
+    "@kurkle/color" "^0.3.0"
+
 chevrotain-allstar@0.3.1:
   version "0.3.1"
   resolved "https://registry.npmmirror.com/chevrotain-allstar/-/chevrotain-allstar-0.3.1.tgz"
@@ -5918,10 +5930,10 @@ functions-have-names@^1.2.3:
   resolved "https://registry.npmmirror.com/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-generator-jhipster-chimera@1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmmirror.com/generator-jhipster-chimera/-/generator-jhipster-chimera-1.1.0.tgz#f3e5af6463425b25cc07bb2ec8e6cd419464d036"
-  integrity sha512-K+CBqJ1naURrk04ZH5cOgb6JoZWLbmGySW2FKkC7gcdaBLyu2LkJdesTVRKFMmrAmvjUVm7VebFbThID+1UKYQ==
+generator-jhipster-chimera@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.npmmirror.com/generator-jhipster-chimera/-/generator-jhipster-chimera-1.2.0.tgz#105ee045d8a75a763967850c07f692e9767f0400"
+  integrity sha512-FvuiFqLmP/FG7f7oE/Dcu7wssaZ6+9oN5epUVG/bz9H0O2oH4eeJPlk5egpFk4hVw8mSGW2IX+/FTPGa5AcFNA==
   dependencies:
     generator-jhipster "8.3.0"
 
