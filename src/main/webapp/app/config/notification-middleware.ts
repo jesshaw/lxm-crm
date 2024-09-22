@@ -83,9 +83,11 @@ export default () => next => action => {
             break;
           }
           case 404:
-            addErrorAlert('Not found', 'error.url.not.found');
+            addErrorAlert('Not found', 'error.http.404');
             break;
-
+          case 403:
+            addErrorAlert(data?.message || data?.title, 'error.http.403');
+            break;
           default:
             if (typeof data === 'string' && data !== '') {
               addErrorAlert(data);

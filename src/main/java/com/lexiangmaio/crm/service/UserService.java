@@ -2,17 +2,21 @@ package com.lexiangmaio.crm.service;
 
 import com.lexiangmaio.crm.config.Constants;
 import com.lexiangmaio.crm.domain.Authority;
+import com.lexiangmaio.crm.domain.Resource;
 import com.lexiangmaio.crm.domain.User;
 import com.lexiangmaio.crm.repository.AuthorityRepository;
+import com.lexiangmaio.crm.repository.ResourceRepository;
 import com.lexiangmaio.crm.repository.UserRepository;
 import com.lexiangmaio.crm.security.AuthoritiesConstants;
 import com.lexiangmaio.crm.security.SecurityUtils;
 import com.lexiangmaio.crm.service.dto.AdminUserDto;
+import com.lexiangmaio.crm.service.dto.PermissionAdminUserDto;
 import com.lexiangmaio.crm.service.dto.UserDto;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.CacheManager;
@@ -34,6 +38,7 @@ public class UserService {
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
     private final UserRepository userRepository;
+    private final ResourceRepository resourceRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -43,11 +48,13 @@ public class UserService {
 
     public UserService(
         UserRepository userRepository,
+        ResourceRepository resourceRepository,
         PasswordEncoder passwordEncoder,
         AuthorityRepository authorityRepository,
         CacheManager cacheManager
     ) {
         this.userRepository = userRepository;
+        this.resourceRepository = resourceRepository;
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.cacheManager = cacheManager;
@@ -286,8 +293,27 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserWithAuthorities() {
-        return SecurityUtils.getCurrentUserLogin().flatMap(userRepository::findOneWithAuthoritiesByLogin);
+    public Optional<PermissionAdminUserDto> getUserWithAuthorities() {
+        Optional<PermissionAdminUserDto> permissionAdminUserDto = SecurityUtils.getCurrentUserLogin()
+            .flatMap(userRepository::findOneWithAuthoritiesByLogin)
+            .map(PermissionAdminUserDto::new);
+        List<String> authorities = permissionAdminUserDto.map(d -> d.getAuthorities().stream().toList()).orElse(Collections.emptyList());
+        List<Resource> resources = resourceRepository.findAllByAuthorityNameIn(authorities);
+        permissionAdminUserDto.ifPresent(dto -> dto.setResources(convertToMap(resources)));
+
+        return permissionAdminUserDto;
+    }
+
+    private Map<String, String> convertToMap(List<Resource> resources) {
+        Map<String, String> map = new HashMap<>();
+        for (Resource resource : resources) {
+            String oldPermission = map.get(resource.getName());
+            String permission = StringUtils.isBlank(oldPermission)
+                ? resource.getPermission()
+                : String.join(",", oldPermission, resource.getPermission());
+            map.put(resource.getName(), permission);
+        }
+        return map;
     }
 
     /**
@@ -308,6 +334,7 @@ public class UserService {
 
     /**
      * Gets a list of all the authorities.
+     *
      * @return a list of all the authorities.
      */
     @Transactional(readOnly = true)

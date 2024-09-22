@@ -23,6 +23,21 @@ module.exports = async options =>
     },
     optimization: {
       moduleIds: 'named',
+      splitChunks: {
+        chunks: 'all', // 分割所有类型的代码
+        minSize: 30000, // 生成块的最小大小
+        maxAsyncRequests: 5, // 按需加载时最大的并行请求数
+        maxInitialRequests: 3, // 入口文件加载时最大的并行请求数
+        automaticNameDelimiter: '~', // 文件名连接符
+        name: false,
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+          },
+        },
+      },
     },
     module: {
       rules: [

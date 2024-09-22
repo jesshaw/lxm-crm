@@ -52,6 +52,7 @@ export const App = () => {
   const currentLocale = useAppSelector(state => state.locale.currentLocale);
   const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
   const isAdmin = useAppSelector(state => hasAnyAuthority(state.authentication.account.authorities, [AUTHORITIES.ADMIN]));
+  const resources = useAppSelector(state => state.authentication.account.resources);
   const ribbonEnv = useAppSelector(state => state.applicationProfile.ribbonEnv);
   const isInProduction = useAppSelector(state => state.applicationProfile.inProduction);
   const isOpenAPIEnabled = useAppSelector(state => state.applicationProfile.isOpenAPIEnabled);
@@ -108,14 +109,17 @@ export const App = () => {
     <BrowserRouter basename={baseHref}>
       <ThemeProvider>
         <div className="layout-container layout-static" ref={layoutContainer}>
-          <Sidebar
-            isAuthenticated={isAuthenticated}
-            isAdmin={isAdmin}
-            currentLocale={currentLocale}
-            ribbonEnv={ribbonEnv}
-            isInProduction={isInProduction}
-            isOpenAPIEnabled={isOpenAPIEnabled}
-          />
+          {resources && (
+            <Sidebar
+              isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
+              currentLocale={currentLocale}
+              ribbonEnv={ribbonEnv}
+              isInProduction={isInProduction}
+              isOpenAPIEnabled={isOpenAPIEnabled}
+              resources={resources}
+            />
+          )}
           <div className="layout-content-wrapper app-container">
             {/* <ToastContainer position="top-left" className="toastify-container" toastClassName="toastify-toast" /> */}
             <ErrorBoundary>
@@ -126,6 +130,7 @@ export const App = () => {
                 ribbonEnv={ribbonEnv}
                 isInProduction={isInProduction}
                 isOpenAPIEnabled={isOpenAPIEnabled}
+                resources={resources}
               />
             </ErrorBoundary>
             <div className="content-breadcrumb">

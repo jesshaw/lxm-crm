@@ -14,17 +14,8 @@ import MyProfile from './my-profile';
 import ThemeSelector from '../theme/theme-selector';
 import { BreadCrumb } from 'primereact/breadcrumb';
 import { InputText } from 'primereact/inputtext';
-import { setMobileLayoutStatus, setStaticLayoutStatus } from 'app/shared/reducers/ui';
+import { IHeaderProps, setMobileLayoutStatus, setStaticLayoutStatus } from 'app/shared/reducers/ui';
 import { toBreadItems } from '../menus/bread-item';
-
-export interface IHeaderProps {
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  ribbonEnv: string;
-  isInProduction: boolean;
-  isOpenAPIEnabled: boolean;
-  currentLocale: string;
-}
 
 const Header = (props: IHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);

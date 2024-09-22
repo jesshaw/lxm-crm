@@ -7,6 +7,7 @@ import com.lexiangmaio.crm.service.MailService;
 import com.lexiangmaio.crm.service.UserService;
 import com.lexiangmaio.crm.service.dto.AdminUserDto;
 import com.lexiangmaio.crm.service.dto.PasswordChangeDTO;
+import com.lexiangmaio.crm.service.dto.PermissionAdminUserDto;
 import com.lexiangmaio.crm.web.rest.errors.*;
 import com.lexiangmaio.crm.web.rest.vm.KeyAndPasswordVM;
 import com.lexiangmaio.crm.web.rest.vm.ManagedUserVM;
@@ -32,7 +33,7 @@ public class AccountResource {
         }
     }
 
-    private final Logger log = LoggerFactory.getLogger(AccountResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AccountResource.class);
 
     private final UserRepository userRepository;
 
@@ -85,11 +86,8 @@ public class AccountResource {
      * @throws RuntimeException {@code 500 (Internal Server Error)} if the user couldn't be returned.
      */
     @GetMapping("/account")
-    public AdminUserDto getAccount() {
-        return userService
-            .getUserWithAuthorities()
-            .map(AdminUserDto::new)
-            .orElseThrow(() -> new AccountResourceException("User could not be found"));
+    public PermissionAdminUserDto getAccount() {
+        return userService.getUserWithAuthorities().orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 
     /**
@@ -147,7 +145,7 @@ public class AccountResource {
         } else {
             // Pretend the request has been successful to prevent checking which emails really exist
             // but log that an invalid attempt has been made
-            log.warn("Password reset requested for non existing mail");
+            LOG.warn("Password reset requested for non existing mail");
         }
     }
 
