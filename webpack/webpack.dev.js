@@ -25,17 +25,41 @@ module.exports = async options =>
       moduleIds: 'named',
       splitChunks: {
         chunks: 'all', // 分割所有类型的代码
-        minSize: 30000, // 生成块的最小大小
-        maxAsyncRequests: 5, // 按需加载时最大的并行请求数
-        maxInitialRequests: 3, // 入口文件加载时最大的并行请求数
+        minSize: 20000, // 最小大小20K
+        maxSize: 2000000, // 超过2M则分隔
+        maxAsyncRequests: 10, // 按需加载时最大的并行请求数
+        maxInitialRequests: 5, // 入口文件加载时最大的并行请求数
         automaticNameDelimiter: '~', // 文件名连接符
         name: false,
         cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
+          //拆成4个大文件
+          vendorReact: {
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            name: 'vendor-react',
             chunks: 'all',
           },
+          vendorLodash: {
+            test: /[\\/]node_modules[\\/](lodash)[\\/]/,
+            name: 'vendor-lodash',
+            chunks: 'all',
+          },
+          vendorPrimeReact: {
+            test: /[\\/]node_modules[\\/](primereact)[\\/]/,
+            name: 'vendor-primereact',
+            chunks: 'all',
+          },
+          vendorOthers: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendor-others',
+            chunks: 'all',
+            priority: -10,
+          },
+
+          // vendor: {
+          //   test: /[\\/]node_modules[\\/]/,
+          //   name: 'vendors',
+          //   chunks: 'all',
+          // },
         },
       },
     },
