@@ -16,6 +16,7 @@ import { BreadCrumb } from 'primereact/breadcrumb';
 import { InputText } from 'primereact/inputtext';
 import { IHeaderProps, setMobileLayoutStatus, setStaticLayoutStatus } from 'app/shared/reducers/ui';
 import { toBreadItems } from '../menus/bread-item';
+import { Button } from 'primereact/button';
 
 const Header = (props: IHeaderProps) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -84,6 +85,18 @@ const Header = (props: IHeaderProps) => {
             <i className="pi pi-search"></i>
             <InputText placeholder="Search" />
           </span>
+        </div>
+        <div>
+          <Button
+            icon="pi pi-book"
+            rounded
+            text
+            aria-label="Bookmark"
+            onClick={e => {
+              e.preventDefault();
+              window.open('//lexiangmiao.com/lxm-crm', '_blank');
+            }}
+          />
         </div>
         <ThemeSelector currentLocale={props.currentLocale} />
         <MyProfile />

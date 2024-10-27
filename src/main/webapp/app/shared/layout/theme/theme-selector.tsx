@@ -86,15 +86,7 @@ const ThemeSelector = ({ currentLocale }: { currentLocale: string }) => {
 
   return (
     <div>
-      <Button
-        icon="pi pi-palette"
-        rounded
-        text
-        severity="secondary"
-        aria-label="Bookmark"
-        onClick={() => dispatch(setUiSettingsStatus(true))}
-      />
-
+      <Button icon="pi pi-palette" rounded text aria-label="Bookmark" onClick={() => dispatch(setUiSettingsStatus(true))} />
       <Sidebar position="right" visible={uiSettingsActivated} onHide={() => dispatch(setUiSettingsStatus(false))}>
         <h5 className="my-6">
           <Translate contentKey="global.menu.language">Language</Translate>
