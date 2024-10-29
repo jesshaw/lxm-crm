@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link LeadInfo} entities in the database.
@@ -24,7 +23,7 @@ import tech.jhipster.service.QueryService;
  */
 @Service
 @Transactional(readOnly = true)
-public class LeadInfoQueryService extends QueryService<LeadInfo> {
+public class LeadInfoQueryService extends LxmQueryService<LeadInfo> {
 
     private final Logger log = LoggerFactory.getLogger(LeadInfoQueryService.class);
 

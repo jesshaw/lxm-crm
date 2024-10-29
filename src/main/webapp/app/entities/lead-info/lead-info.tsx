@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 // import { Button, Table } from 'reactstrap';
 import { Toolbar } from 'primereact/toolbar';
-import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableStateEvent } from 'primereact/datatable';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -25,8 +25,18 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, deleteEntity } from './lead-info.reducer';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { ILeadInfo } from 'app/shared/model/lead-info.model';
 import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { classNames } from 'primereact/utils';
+import { Slider } from 'primereact/slider';
+import {
+  booleanFilterTemplate,
+  convertFiltersToQueryString,
+  dateFilterTemplate,
+  numericFilterTemplate,
+} from 'app/shared/util/filter-utils';
 
 export const LeadInfo = () => {
   const dispatch = useAppDispatch();
@@ -38,17 +48,36 @@ export const LeadInfo = () => {
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
 
+  const [filters, setFilters] = useState<DataTableFilterMeta>({
+    // global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    id: {
+      operator: FilterOperator.AND,
+      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+    },
+    firstName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    // dateReviewed: { value: null, matchMode: FilterMatchMode.DATE_IS },
+    dateReviewed: {
+      operator: FilterOperator.AND,
+      constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+    },
+    doNotCall: { value: null, matchMode: FilterMatchMode.EQUALS },
+    assignedUserId: { value: null, matchMode: FilterMatchMode.IN },
+  });
+
   useEffect(() => {
     dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.leadInfoMenuItem]));
+    dispatch(getUsers({}));
   }, []);
 
   const leadInfoList = useAppSelector(state => state.leadInfo.entities);
   const loading = useAppSelector(state => state.leadInfo.loading);
   const totalItems = useAppSelector(state => state.leadInfo.totalItems);
+  const users = useAppSelector(state => state.userManagement.users);
 
-  const getAllEntities = () => {
+  const getAllEntities = query => {
     dispatch(
       getEntities({
+        query,
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
@@ -57,8 +86,12 @@ export const LeadInfo = () => {
   };
 
   const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&size=${paginationState.itemsPerPage}&sort=${paginationState.sort},${paginationState.order}`;
+    const queryString = convertFiltersToQueryString(filters);
+    console.log(queryString);
+
+    getAllEntities(queryString);
+
+    const endURL = `?${queryString}&page=${paginationState.activePage}&size=${paginationState.itemsPerPage}&sort=${paginationState.sort},${paginationState.order}`;
     if (pageLocation.search !== endURL) {
       navigate(`${pageLocation.pathname}${endURL}`);
     }
@@ -66,7 +99,7 @@ export const LeadInfo = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.itemsPerPage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage, paginationState.itemsPerPage, paginationState.order, paginationState.sort, filters]);
 
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
@@ -99,6 +132,24 @@ export const LeadInfo = () => {
       activePage: e.page + 1,
       itemsPerPage: e.rows,
     });
+  };
+
+  const onFilter = (e: DataTableStateEvent) => {
+    console.log(e.filters);
+    console.log(filters);
+    // const value = e..target.value;
+    // let _filters = { ...filters };
+
+    // // @ts-ignore
+    // _filters['global'].value = value;
+
+    setFilters(e.filters);
+
+    // setPaginationState({
+    //   ...paginationState,
+    //   activePage: e.page + 1,
+    //   itemsPerPage: e.rows,
+    // });
   };
 
   const handleSyncList = () => {
@@ -167,11 +218,87 @@ export const LeadInfo = () => {
     </>
   );
 
+  // const dateFilterTemplate = options => {
+  //   return (
+  //     <Calendar
+  //       value={options.value}
+  //       onChange={e => options.filterCallback(e.value, options.index)}
+  //       dateFormat="yy-mm-dd"
+  //       placeholder="yyyy-mm-dd"
+  //       mask="9999-99-99"
+  //     />
+  //   );
+  // };
+
+  // const numericFilterTemplate = options => {
+  //   return (
+  //     <InputNumber
+  //       useGrouping={false}
+  //       min={1}
+  //       minFractionDigits={0} // 最小小数位数为 0
+  //       maxFractionDigits={0} // 最大小数位数为 0
+  //       value={options.value}
+  //       onChange={e => options.filterCallback(e.value, options.index)}
+  //     />
+  //   );
+  // };
+
+  // const booleanFilterTemplate = options => {
+  //   return <TriStateCheckbox value={options.value} onChange={e => options.filterCallback(e.value)} />;
+  // };
+
+  // const assignNameFilterTemplate1 = (options: ColumnFilterElementTemplateOptions) => {
+  //   return (
+  //     <>
+  //       <MultiSelect
+  //         options={users}
+  //         onChange={(e: MultiSelectChangeEvent) => options.filterApplyCallback(e.value)}
+  //         optionLabel="login"
+  //         optionValue="id"
+  //         className="p-column-filter"
+  //         maxSelectedLabels={1}
+  //       />
+  //     </>
+  //   );
+  // };
+
+  // 多选
+  const assignNameFilterTemplate = options => {
+    return (
+      <MultiSelect
+        value={options.value ?? ''}
+        options={users}
+        onChange={e => options.filterCallback(e.value)}
+        optionLabel="login"
+        optionValue="id"
+        placeholder="Any"
+        className="p-column-filter"
+      />
+    );
+  };
+
+  // 进度百分比
+  const percentFilterTemplate = options => {
+    return (
+      <React.Fragment>
+        <Slider value={options.value} onChange={e => options.filterCallback(e.value)} range className="m-3"></Slider>
+        <div className="align-items-center justify-content-between flex px-2">
+          <span>{options.value ? options.value[0] : 0}</span>
+          <span>{options.value ? options.value[1] : 100}</span>
+        </div>
+      </React.Fragment>
+    );
+  };
+
   const allColumns = [
     {
       field: 'id',
       headerKey: 'lxmcrmApp.leadInfo.id',
       sortable: true,
+      filter: true,
+      filterElement: numericFilterTemplate,
+      dataType: 'numeric',
+      showFilterOperator: false,
     },
     {
       field: 'salutation',
@@ -182,6 +309,7 @@ export const LeadInfo = () => {
       field: 'firstName',
       headerKey: 'lxmcrmApp.leadInfo.firstName',
       sortable: true,
+      filter: true,
     },
     {
       field: 'lastName',
@@ -202,8 +330,18 @@ export const LeadInfo = () => {
       field: 'doNotCall',
       headerKey: 'lxmcrmApp.leadInfo.doNotCall',
       sortable: true,
+      filter: true,
+      filterElement: booleanFilterTemplate,
+      dataType: 'boolean',
       body: rowData => {
-        return <>{rowData.doNotCall ? 'true' : 'false'}</>;
+        return (
+          <i
+            className={classNames('pi', {
+              'true-icon pi-check-circle text-green-500': rowData.doNotCall,
+              'false-icon pi-times-circle text-red-500': !rowData.doNotCall,
+            })}
+          ></i>
+        );
       },
     },
     {
@@ -235,6 +373,10 @@ export const LeadInfo = () => {
       field: 'dateReviewed',
       headerKey: 'lxmcrmApp.leadInfo.dateReviewed',
       sortable: true,
+      filter: true,
+      dataType: 'date',
+      showFilterOperator: false,
+      filterElement: dateFilterTemplate,
       body: rowData => {
         return rowData.dateReviewed && <TextFormat type="date" value={rowData.dateReviewed} format={APP_LOCAL_DATE_FORMAT} />;
       },
@@ -368,9 +510,12 @@ export const LeadInfo = () => {
       },
     },
     {
-      field: 'assignedUser.login',
+      field: 'assignedUserId',
       headerKey: 'lxmcrmApp.leadInfo.assignedUser',
       sortable: true,
+      filter: true,
+      showFilterMatchModes: false,
+      filterElement: assignNameFilterTemplate,
       body: rowData => {
         return <>{rowData.assignedUser ? rowData.assignedUser.login : ''}</>;
       },
@@ -507,8 +652,14 @@ export const LeadInfo = () => {
           header={translate(column?.headerKey)}
           body={column?.body ? column.body : undefined}
           sortable={column?.sortable}
+          filter={column?.filter}
+          dataType={column?.dataType}
+          showFilterOperator={column?.showFilterOperator}
+          showFilterMatchModes={column?.showFilterMatchModes}
+          filterElement={column?.filterElement}
           exportable={column?.exportable}
           style={column?.style}
+          filterMenuStyle={{ width: '14rem' }}
         />
       );
     });
@@ -528,6 +679,8 @@ export const LeadInfo = () => {
           sortField={paginationState.sort}
           sortOrder={paginationState.order === ASC ? -1 : 1}
           onPage={onPage} //sort by backend
+          filters={filters}
+          onFilter={onFilter}
           lazy
           loading={loading}
           paginator

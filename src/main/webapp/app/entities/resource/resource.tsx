@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 // import { Button, Table } from 'reactstrap';
 import { Toolbar } from 'primereact/toolbar';
-import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableStateEvent } from 'primereact/datatable';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -17,6 +17,15 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, deleteEntity } from './resource.reducer';
 import { IResource } from 'app/shared/model/resource.model';
 import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { classNames } from 'primereact/utils';
+import { Slider } from 'primereact/slider';
+import {
+  booleanFilterTemplate,
+  convertFiltersToQueryString,
+  dateFilterTemplate,
+  numericFilterTemplate,
+} from 'app/shared/util/filter-utils';
 
 export const Resource = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +35,12 @@ export const Resource = () => {
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
 
+  const [filters, setFilters] = useState<DataTableFilterMeta>({
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+
+    permission: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  });
+
   useEffect(() => {
     dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.resourceMenuItem]));
   }, []);
@@ -33,17 +48,19 @@ export const Resource = () => {
   const resourceList = useAppSelector(state => state.resource.entities);
   const loading = useAppSelector(state => state.resource.loading);
 
-  const getAllEntities = () => {
+  const getAllEntities = query => {
     dispatch(
       getEntities({
+        query,
         sort: `${sortState.sort},${sortState.order}`,
       }),
     );
   };
 
   const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?sort=${sortState.sort},${sortState.order}`;
+    const queryString = convertFiltersToQueryString(filters);
+    getAllEntities(queryString);
+    const endURL = `?${queryString}&sort=${sortState.sort},${sortState.order}`;
     if (pageLocation.search !== endURL) {
       navigate(`${pageLocation.pathname}${endURL}`);
     }
@@ -51,7 +68,7 @@ export const Resource = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [sortState.order, sortState.sort]);
+  }, [sortState.order, sortState.sort, filters]);
 
   const onSort = (e: DataTableStateEvent) => {
     setSortState({
@@ -59,6 +76,10 @@ export const Resource = () => {
       order: sortState.order === ASC ? DESC : ASC,
       sort: e.sortField,
     });
+  };
+
+  const onFilter = (e: DataTableStateEvent) => {
+    setFilters(e.filters);
   };
 
   const handleSyncList = () => {
@@ -130,22 +151,32 @@ export const Resource = () => {
   const allColumns = [
     {
       field: 'id',
-      headerKey: 'lxmcrmApp.resource.id',
+      headerKey: 'lxmcmsApp.resource.id',
       sortable: true,
     },
     {
       field: 'name',
-      headerKey: 'lxmcrmApp.resource.name',
+      headerKey: 'lxmcmsApp.resource.name',
       sortable: true,
+      filter: true,
+      dataType: 'string',
+      showFilterMatchModes: true,
+      showFilterOperator: true,
+      filterElement: null,
     },
     {
       field: 'permission',
-      headerKey: 'lxmcrmApp.resource.permission',
+      headerKey: 'lxmcmsApp.resource.permission',
       sortable: true,
+      filter: true,
+      dataType: 'string',
+      showFilterMatchModes: true,
+      showFilterOperator: true,
+      filterElement: null,
     },
     {
       field: 'authority.name',
-      headerKey: 'lxmcrmApp.resource.authority',
+      headerKey: 'lxmcmsApp.resource.authority',
       sortable: true,
       body: rowData => {
         return (
@@ -257,7 +288,7 @@ export const Resource = () => {
   const header = (
     <div className="l-datatable-header">
       <h5>
-        <Translate contentKey="lxmcrmApp.resource.home.title">Resources</Translate>
+        <Translate contentKey="lxmcmsApp.resource.home.title">Resources</Translate>
       </h5>
       <MultiSelect
         value={selectedColumns}
@@ -283,6 +314,11 @@ export const Resource = () => {
           header={translate(column?.headerKey)}
           body={column?.body ? column.body : undefined}
           sortable={column?.sortable}
+          filter={column?.filter}
+          dataType={column?.dataType}
+          showFilterOperator={column?.showFilterOperator}
+          showFilterMatchModes={column?.showFilterMatchModes}
+          filterElement={column?.filterElement}
           exportable={column?.exportable}
           style={column?.style}
         />
@@ -299,7 +335,7 @@ export const Resource = () => {
           dataKey="id"
           selectionMode="single"
           header={header}
-          emptyMessage={translate('lxmcrmApp.resource.home.notFound')}
+          emptyMessage={translate('lxmcmsApp.resource.home.notFound')}
           onSort={onSort} //sort by backend
           sortField={sortState.sort}
           sortOrder={sortState.order === ASC ? -1 : 1}
@@ -320,7 +356,7 @@ export const Resource = () => {
         <div className="confirmation-content">
           <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
           {resource && (
-            <Translate contentKey="lxmcrmApp.resource.delete.question" interpolate={{ id: resource.id }}>
+            <Translate contentKey="lxmcmsApp.resource.delete.question" interpolate={{ id: resource.id }}>
               Are you sure you want to delete this Resource?
             </Translate>
           )}

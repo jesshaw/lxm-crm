@@ -34,6 +34,14 @@ mvn spring-boot:run
 yarn start
 # 或
 npm start
+
+# 把所有更改合并到最近一次提交，并且不编辑确认
+git add . && git commit --amend --no-edit
+
+# 重新发布指定的版本
+
+TAG='v1.1.7' MSG='Add the documentation link and Update the logo' && git push -d origin "${TAG}" && git tag -d "${TAG}" && git tag "${TAG}" -m "${MSG}" && git push origin "${TAG}"
+
 ```
 
 Npm 还用于管理此应用程序中使用的 CSS 和 JavaScript 依赖项。您可以通过在[package.json](package.json)
@@ -46,7 +54,7 @@ Npm 还用于管理此应用程序中使用的 CSS 和 JavaScript 依赖项。�
 基于凯米拉（Chimera）蓝本按需生成业务实体的基本功能。
 
 ```bash
-jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --skip-install  crm.jdl
+jhipster jdl --blueprints chimera --project-version 1.1.7-SNAPSHOT --skip-git --skip-install  crm.jdl
 
 jhipster jdl --blueprints chimera --project-version 1.1.4-SNAPSHOT --skip-git --skip-cache --skip-install  crm.jdl
 
@@ -54,7 +62,7 @@ jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server
 
 jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-fake-data --skip-db-changelog --skip-git --skip-cache --skip-install  crm.jdl
 
-jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install --skip-fake-data --skip-db-changelog  crm.jdl
+jhipster jdl --blueprints chimera --project-version 1.1.7-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install --skip-fake-data --skip-db-changelog  crm.jdl
 
 ```
 

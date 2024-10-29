@@ -18,8 +18,8 @@ const apiUrl = 'api/lead-infos';
 
 // Actions
 
-export const getEntities = createAsyncThunk('leadInfo/fetch_entity_list', async ({ page, size, sort }: IQueryParams) => {
-  const requestUrl = `${apiUrl}?${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
+export const getEntities = createAsyncThunk('leadInfo/fetch_entity_list', async ({ query, page, size, sort }: IQueryParams) => {
+  const requestUrl = `${apiUrl}?${query}&${sort ? `page=${page}&size=${size}&sort=${sort}&` : ''}cacheBuster=${new Date().getTime()}`;
   return axios.get<ILeadInfo[]>(requestUrl);
 });
 

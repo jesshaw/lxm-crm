@@ -9,8 +9,8 @@ copyright: Copyright &copy; 2024 - 2025 Jes Shaw
 
 theme:
   language: 'zh'
-  favicon: assets/lxm-crm.ico
-  logo: assets/lxm-crm.png
+  favicon: assets/lxm-32x32-white.png
+  logo: assets/lxm-180x180-white.png
   name: material
   custom_dir: docs_theme/
   features:

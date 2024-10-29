@@ -8,7 +8,7 @@
     "blueprints": [
       {
         "name": "generator-jhipster-chimera",
-        "version": "1.0.0"
+        "version": "1.3.0"
       }
     ],
     "buildTool": "maven",
@@ -34,6 +34,7 @@
     "packageName": "com.lexiangmaio.crm",
     "prodDatabaseType": "mysql",
     "serverPort": "8088",
+    "skipFakeData": true,
     "testFrameworks": []
   }
 }
