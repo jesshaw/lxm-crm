@@ -58,6 +58,18 @@ jobs:
           files: |
             Release.txt
             LxmCRM-${{ env.VERSION }}.jar
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add target server to known_hosts
+        run: |
+          ssh-keyscan 139.196.242.18 >> ~/.ssh/known_hosts
+      - name: Deploy JAR to Server
+        run: |
+          mv LxmCRM-${{ env.VERSION }}.jar app.jar
+          scp app.jar root@139.196.242.18:/root/lxm-crm/
+          ssh root@139.196.242.18 "cd /root/lxm-crm/ && docker compose restart"
 
       # - name: Log in to the Container registry
       #   uses: docker/login-action@v3

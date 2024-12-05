@@ -4,6 +4,8 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 const WebpackNotifierPlugin = require('webpack-notifier');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const sass = require('sass');
 
 const utils = require('./utils.js');
@@ -23,10 +25,54 @@ module.exports = async options =>
     },
     optimization: {
       moduleIds: 'named',
+
+      usedExports: true, // 标记未使用的代码
+      minimize: true, // 启用压缩
+      minimizer: [
+        new TerserPlugin({
+          terserOptions: {
+            parse: {
+              // We want terser to parse ecma 8 code. However, we don't want it
+              // to apply any minification steps that turns valid ecma 5 code
+              // into invalid ecma 5 code. This is why the 'compress' and 'output'
+              // sections only apply transformations that are ecma 5 safe
+              // https://github.com/facebook/create-react-app/pull/4234
+              ecma: 8,
+            },
+            compress: {
+              ecma: 5,
+              warnings: false,
+              // Disabled because of an issue with Uglify breaking seemingly valid code:
+              // https://github.com/facebook/create-react-app/issues/2376
+              // Pending further investigation:
+              // https://github.com/mishoo/UglifyJS2/issues/2011
+              comparisons: false,
+              // Disabled because of an issue with Terser breaking valid code:
+              // https://github.com/facebook/create-react-app/issues/5250
+              // Pending further investigation:
+              // https://github.com/terser-js/terser/issues/120
+              inline: 2,
+            },
+            mangle: {
+              safari10: true,
+            },
+            output: {
+              ecma: 5,
+              comments: false,
+              // Turned on because emoji and regex is not minified properly using default
+              // https://github.com/facebook/create-react-app/issues/2488
+              ascii_only: true,
+            },
+          },
+        }),
+        new CssMinimizerPlugin({
+          parallel: true,
+        }),
+      ],
       splitChunks: {
         chunks: 'all', // 分割所有类型的代码
-        minSize: 20000, // 最小大小20K
-        maxSize: 2000000, // 超过2M则分隔
+        minSize: 20000, // 最小大小20k
+        maxSize: 200000, // 超过200k则分隔
         maxAsyncRequests: 10, // 按需加载时最大的并行请求数
         maxInitialRequests: 5, // 入口文件加载时最大的并行请求数
         automaticNameDelimiter: '~', // 文件名连接符
@@ -36,6 +82,16 @@ module.exports = async options =>
           vendorReact: {
             test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
             name: 'vendor-react',
+            chunks: 'all',
+          },
+          vendorReact: {
+            test: /[\\/]node_modules[\\/](react-jhipster)[\\/]/,
+            name: 'vendor-jhipster',
+            chunks: 'all',
+          },
+          vendorReact: {
+            test: /[\\/]node_modules[\\/](react-router|react-router-dom)[\\/]/,
+            name: 'vendor-router',
             chunks: 'all',
           },
           vendorLodash: {
