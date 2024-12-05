@@ -34,6 +34,11 @@ mvn spring-boot:run
 yarn start
 # 或
 npm start
+
+# 重新发布指定的版本
+
+TAG='v1.1.7' MSG='Add the documentation link and Update the logo' && git push -d origin "${TAG}" && git tag -d "${TAG}" && git tag "${TAG}" -m "${MSG}" && git push origin "${TAG}"
+
 ```
 
 Npm 还用于管理此应用程序中使用的 CSS 和 JavaScript 依赖项。您可以通过在[package.json](package.json)

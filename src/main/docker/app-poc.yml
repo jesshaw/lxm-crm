@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  lxm-crm:
+    image: openjdk:17-jdk-alpine
+    container_name: lxm-crm
+    working_dir: /app
+    volumes:
+      - ./app.jar:/app/app.jar
+    command: ['java', '-Xmx1G', '-jar', 'app.jar']
+    ports:
+      - '8088:8088' # 如果应用监听其他端口，请调整
+    deploy:
+      resources:
+        limits:
+          memory: 1g # 限制最大内存为 1G
+          cpus: '0.5' # 限制 CPU 使用为 0.5 核
+        reservations:
+          memory: 512m # 预留内存，非强制
+    restart: unless-stopped
