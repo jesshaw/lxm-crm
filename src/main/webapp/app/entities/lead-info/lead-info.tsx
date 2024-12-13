@@ -2,7 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 // import { Button, Table } from 'reactstrap';
 import { Toolbar } from 'primereact/toolbar';
-import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import {
+  DataTable,
+  DataTableFilterMeta,
+  DataTableFilterMetaData,
+  DataTableOperatorFilterMetaData,
+  DataTableStateEvent,
+} from 'primereact/datatable';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -27,6 +33,12 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, deleteEntity } from './lead-info.reducer';
 import { ILeadInfo } from 'app/shared/model/lead-info.model';
 import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { Calendar } from 'primereact/calendar';
+import { InputNumber } from 'primereact/inputnumber';
+import { TriStateCheckbox } from 'primereact/tristatecheckbox';
+import { classNames } from 'primereact/utils';
+import dayjs from 'dayjs';
 
 export const LeadInfo = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +50,96 @@ export const LeadInfo = () => {
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
 
+  const [filters, setFilters] = useState<DataTableFilterMeta>({
+    // global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    id: {
+      operator: FilterOperator.AND,
+      constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }],
+    },
+    firstName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    // dateReviewed: { value: null, matchMode: FilterMatchMode.DATE_IS },
+    dateReviewed: {
+      operator: FilterOperator.AND,
+      constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
+    },
+    doNotCall: { value: null, matchMode: FilterMatchMode.EQUALS },
+    // 'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+  });
+
+  function convertFiltersToQueryString(filters: DataTableFilterMeta): string {
+    const params = new URLSearchParams();
+
+    Object.entries(filters).forEach(([field, filter]) => {
+      // 判断字段是否为 DataTableOperatorFilterMetaData 类型
+      if ((filter as DataTableOperatorFilterMetaData).constraints) {
+        const operatorFilter = filter as DataTableOperatorFilterMetaData;
+        operatorFilter.constraints.forEach((constraint, index) => {
+          if (constraint.value != null) {
+            const filterOption = convertField(field, constraint as DataTableFilterMetaData);
+            // console.log(filterOption);
+            if (filterOption != null) {
+              params.append(filterOption?.field, filterOption?.value);
+            }
+          }
+        });
+
+        // // 处理 operator 字段
+        // if (operatorFilter.operator) {
+        //   params.append(`${field}.operator`, operatorFilter.operator);
+        // }
+      } else if ((filter as DataTableFilterMetaData).value != null) {
+        const filterOption = convertField(field, filter as DataTableFilterMetaData);
+        // console.log(filterOption);
+        if (filterOption != null) {
+          params.append(filterOption?.field, filterOption?.value);
+        }
+      }
+    });
+
+    return params.toString();
+  }
+
+  function convertField(field: string, filter: DataTableFilterMetaData) {
+    switch (filter.matchMode) {
+      case FilterMatchMode.CONTAINS:
+        return { field: `${field}.contains`, value: `%${filter.value}%` };
+      case FilterMatchMode.STARTS_WITH:
+        return { field: `${field}.contains`, value: `${filter.value}%` };
+      case FilterMatchMode.ENDS_WITH:
+        return { field: `${field}.contains`, value: `%${filter.value}` };
+      case FilterMatchMode.NOT_CONTAINS:
+        return { field: `${field}.doesNotContain`, value: `%${filter.value}%` };
+      case FilterMatchMode.EQUALS:
+        return { field: `${field}.equals`, value: filter.value };
+      case FilterMatchMode.NOT_EQUALS:
+        return { field: `${field}.notEquals`, value: filter.value };
+      case FilterMatchMode.LESS_THAN:
+        return { field: `${field}.lessThan`, value: filter.value };
+      case FilterMatchMode.LESS_THAN_OR_EQUAL_TO:
+        return { field: `${field}.lessThanOrEqual`, value: filter.value };
+      case FilterMatchMode.GREATER_THAN:
+        return { field: `${field}.greaterThan`, value: filter.value };
+      case FilterMatchMode.GREATER_THAN_OR_EQUAL_TO:
+        return { field: `${field}.greaterThanOrEqual`, value: filter.value };
+      case FilterMatchMode.DATE_IS:
+        return { field: `${field}.equals`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+      case FilterMatchMode.DATE_IS_NOT:
+        return { field: `${field}.notEquals`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+      case FilterMatchMode.DATE_BEFORE:
+        return { field: `${field}.lessThan`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+      case FilterMatchMode.DATE_AFTER:
+        return { field: `${field}.greaterThan`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+      // case FilterMatchMode.IN:
+      //   return { field: `${field}.in`, value: filter.value };
+      // case FilterMatchMode.NOT_IN:
+      //   return { field: `${field}.notIn`, value: filter.value };
+      // case FilterMatchMode.BETWEEN:
+      //   return { field: `${field}.notIn`, value: filter.value };
+      default:
+        return null;
+    }
+  }
+
   useEffect(() => {
     dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.leadInfoMenuItem]));
   }, []);
@@ -46,9 +148,10 @@ export const LeadInfo = () => {
   const loading = useAppSelector(state => state.leadInfo.loading);
   const totalItems = useAppSelector(state => state.leadInfo.totalItems);
 
-  const getAllEntities = () => {
+  const getAllEntities = query => {
     dispatch(
       getEntities({
+        query,
         page: paginationState.activePage - 1,
         size: paginationState.itemsPerPage,
         sort: `${paginationState.sort},${paginationState.order}`,
@@ -57,8 +160,12 @@ export const LeadInfo = () => {
   };
 
   const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?page=${paginationState.activePage}&size=${paginationState.itemsPerPage}&sort=${paginationState.sort},${paginationState.order}`;
+    const queryString = convertFiltersToQueryString(filters);
+    console.log(queryString);
+
+    getAllEntities(queryString);
+
+    const endURL = `?${queryString}&page=${paginationState.activePage}&size=${paginationState.itemsPerPage}&sort=${paginationState.sort},${paginationState.order}`;
     if (pageLocation.search !== endURL) {
       navigate(`${pageLocation.pathname}${endURL}`);
     }
@@ -66,7 +173,7 @@ export const LeadInfo = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [paginationState.activePage, paginationState.itemsPerPage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage, paginationState.itemsPerPage, paginationState.order, paginationState.sort, filters]);
 
   useEffect(() => {
     const params = new URLSearchParams(pageLocation.search);
@@ -99,6 +206,24 @@ export const LeadInfo = () => {
       activePage: e.page + 1,
       itemsPerPage: e.rows,
     });
+  };
+
+  const onFilter = (e: DataTableStateEvent) => {
+    console.log(e.filters);
+    console.log(filters);
+    // const value = e..target.value;
+    // let _filters = { ...filters };
+
+    // // @ts-ignore
+    // _filters['global'].value = value;
+
+    setFilters(e.filters);
+
+    // setPaginationState({
+    //   ...paginationState,
+    //   activePage: e.page + 1,
+    //   itemsPerPage: e.rows,
+    // });
   };
 
   const handleSyncList = () => {
@@ -167,11 +292,44 @@ export const LeadInfo = () => {
     </>
   );
 
+  const dateFilterTemplate = options => {
+    return (
+      <Calendar
+        value={options.value}
+        onChange={e => options.filterCallback(e.value, options.index)}
+        dateFormat="yy-mm-dd"
+        placeholder="yyyy-mm-dd"
+        mask="9999-99-99"
+      />
+    );
+  };
+
+  const numericFilterTemplate = options => {
+    return (
+      <InputNumber
+        useGrouping={false}
+        min={1}
+        minFractionDigits={0} // 最小小数位数为 0
+        maxFractionDigits={0} // 最大小数位数为 0
+        value={options.value}
+        onChange={e => options.filterCallback(e.value, options.index)}
+      />
+    );
+  };
+
+  const booleanFilterTemplate = options => {
+    return <TriStateCheckbox value={options.value} onChange={e => options.filterCallback(e.value)} />;
+  };
+
   const allColumns = [
     {
       field: 'id',
       headerKey: 'lxmcrmApp.leadInfo.id',
       sortable: true,
+      filter: true,
+      filterElement: numericFilterTemplate,
+      dataType: 'numeric',
+      showFilterOperator: false,
     },
     {
       field: 'salutation',
@@ -182,6 +340,7 @@ export const LeadInfo = () => {
       field: 'firstName',
       headerKey: 'lxmcrmApp.leadInfo.firstName',
       sortable: true,
+      filter: true,
     },
     {
       field: 'lastName',
@@ -202,8 +361,18 @@ export const LeadInfo = () => {
       field: 'doNotCall',
       headerKey: 'lxmcrmApp.leadInfo.doNotCall',
       sortable: true,
+      filter: true,
+      filterElement: booleanFilterTemplate,
+      dataType: 'boolean',
       body: rowData => {
-        return <>{rowData.doNotCall ? 'true' : 'false'}</>;
+        return (
+          <i
+            className={classNames('pi', {
+              'true-icon pi-check-circle text-green-500': rowData.doNotCall,
+              'false-icon pi-times-circle text-red-500': !rowData.doNotCall,
+            })}
+          ></i>
+        );
       },
     },
     {
@@ -235,6 +404,10 @@ export const LeadInfo = () => {
       field: 'dateReviewed',
       headerKey: 'lxmcrmApp.leadInfo.dateReviewed',
       sortable: true,
+      filter: true,
+      dataType: 'date',
+      showFilterOperator: false,
+      filterElement: dateFilterTemplate,
       body: rowData => {
         return rowData.dateReviewed && <TextFormat type="date" value={rowData.dateReviewed} format={APP_LOCAL_DATE_FORMAT} />;
       },
@@ -507,6 +680,10 @@ export const LeadInfo = () => {
           header={translate(column?.headerKey)}
           body={column?.body ? column.body : undefined}
           sortable={column?.sortable}
+          filter={column?.filter}
+          dataType={column?.dataType}
+          showFilterOperator={column?.showFilterOperator}
+          filterElement={column?.filterElement}
           exportable={column?.exportable}
           style={column?.style}
         />
@@ -528,6 +705,8 @@ export const LeadInfo = () => {
           sortField={paginationState.sort}
           sortOrder={paginationState.order === ASC ? -1 : 1}
           onPage={onPage} //sort by backend
+          filters={filters}
+          onFilter={onFilter}
           lazy
           loading={loading}
           paginator

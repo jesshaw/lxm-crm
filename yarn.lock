@@ -5930,10 +5930,8 @@ functions-have-names@^1.2.3:
   resolved "https://registry.npmmirror.com/functions-have-names/-/functions-have-names-1.2.3.tgz"
   integrity sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==
 
-generator-jhipster-chimera@1.3.0:
+"generator-jhipster-chimera@file:../generator-jhipster-chimera":
   version "1.3.0"
-  resolved "https://registry.npmmirror.com/generator-jhipster-chimera/-/generator-jhipster-chimera-1.3.0.tgz#8a59170ff75a5092d1ea0feaacfb714b8d4da213"
-  integrity sha512-5nxXKjTFffmkRkjEro60r/zQZM7dMq/moV8dmEAb38xPJJB9L0cHCFi4zJ9024rYN1Jnxxjhj3e89LkwE98DnQ==
   dependencies:
     generator-jhipster "8.3.0"
 
@@ -9841,10 +9839,10 @@ primeicons@7.0.0:
   resolved "https://registry.npmmirror.com/primeicons/-/primeicons-7.0.0.tgz"
   integrity sha512-jK3Et9UzwzTsd6tzl2RmwrVY/b8raJ3QZLzoDACj+oTJ0oX7L9Hy+XnVwgo4QVKlKpnP/Ur13SXV/pVh4LzaDw==
 
-primereact@10.6.6:
-  version "10.6.6"
-  resolved "https://registry.npmmirror.com/primereact/-/primereact-10.6.6.tgz"
-  integrity sha512-+C0Bt6vS/jh09DQVS4UXpVctbvqJDUC3t3mVdGmhmIINYD8kdfL3fvc3bUGniGxkKKzwkSYdAQXhZlcgj8LUgw==
+primereact@10.8.5:
+  version "10.8.5"
+  resolved "https://registry.npmmirror.com/primereact/-/primereact-10.8.5.tgz#adc7dcb0ff10f269eee814d6f1e3409779870ea8"
+  integrity sha512-B1LeJdNGGAB8P1VRJE0TDYz6rZSDwxE7Ft8PLFjRYLO44+mIJNDsLYSB56LRJOoqUNRhQrRIe/5ctS5eyQAzwQ==
   dependencies:
     "@types/react-transition-group" "^4.4.1"
     react-transition-group "^4.4.1"

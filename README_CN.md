@@ -54,7 +54,7 @@ Npm 还用于管理此应用程序中使用的 CSS 和 JavaScript 依赖项。�
 基于凯米拉（Chimera）蓝本按需生成业务实体的基本功能。
 
 ```bash
-jhipster jdl --blueprints chimera --project-version 1.0.4-SNAPSHOT --skip-git --skip-install  crm.jdl
+jhipster jdl --blueprints chimera --project-version 1.1.7-SNAPSHOT --skip-git --skip-install  crm.jdl
 
 jhipster jdl --blueprints chimera --project-version 1.1.4-SNAPSHOT --skip-git --skip-cache --skip-install  crm.jdl
 
@@ -62,7 +62,7 @@ jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server
 
 jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-fake-data --skip-db-changelog --skip-git --skip-cache --skip-install  crm.jdl
 
-jhipster jdl --blueprints chimera --project-version 1.1.0-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install --skip-fake-data --skip-db-changelog  crm.jdl
+jhipster jdl --blueprints chimera --project-version 1.1.7-SNAPSHOT --skip-server --skip-git --skip-cache --skip-install --skip-fake-data --skip-db-changelog  crm.jdl
 
 ```
 
