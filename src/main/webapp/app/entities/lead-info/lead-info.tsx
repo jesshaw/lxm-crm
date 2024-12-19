@@ -10,7 +10,7 @@ import {
   DataTableStateEvent,
 } from 'primereact/datatable';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
-import { Column } from 'primereact/column';
+import { Column, ColumnFilterElementTemplateOptions } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import {
@@ -31,6 +31,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, deleteEntity } from './lead-info.reducer';
+import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { ILeadInfo } from 'app/shared/model/lead-info.model';
 import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
@@ -39,6 +40,7 @@ import { InputNumber } from 'primereact/inputnumber';
 import { TriStateCheckbox } from 'primereact/tristatecheckbox';
 import { classNames } from 'primereact/utils';
 import dayjs from 'dayjs';
+import { Slider } from 'primereact/slider';
 
 export const LeadInfo = () => {
   const dispatch = useAppDispatch();
@@ -63,7 +65,7 @@ export const LeadInfo = () => {
       constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }],
     },
     doNotCall: { value: null, matchMode: FilterMatchMode.EQUALS },
-    // 'country.name': { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    assignedUserId: { value: null, matchMode: FilterMatchMode.IN },
   });
 
   function convertFiltersToQueryString(filters: DataTableFilterMeta): string {
@@ -75,24 +77,19 @@ export const LeadInfo = () => {
         const operatorFilter = filter as DataTableOperatorFilterMetaData;
         operatorFilter.constraints.forEach((constraint, index) => {
           if (constraint.value != null) {
-            const filterOption = convertField(field, constraint as DataTableFilterMetaData);
+            const filterOptions = convertField(field, constraint as DataTableFilterMetaData);
             // console.log(filterOption);
-            if (filterOption != null) {
-              params.append(filterOption?.field, filterOption?.value);
-            }
+            filterOptions.forEach(item => {
+              params.append(item?.field, item?.value);
+            });
           }
         });
-
-        // // 处理 operator 字段
-        // if (operatorFilter.operator) {
-        //   params.append(`${field}.operator`, operatorFilter.operator);
-        // }
       } else if ((filter as DataTableFilterMetaData).value != null) {
-        const filterOption = convertField(field, filter as DataTableFilterMetaData);
+        const filterOptions = convertField(field, filter as DataTableFilterMetaData);
         // console.log(filterOption);
-        if (filterOption != null) {
-          params.append(filterOption?.field, filterOption?.value);
-        }
+        filterOptions.forEach(item => {
+          params.append(item?.field, item?.value);
+        });
       }
     });
 
@@ -102,39 +99,42 @@ export const LeadInfo = () => {
   function convertField(field: string, filter: DataTableFilterMetaData) {
     switch (filter.matchMode) {
       case FilterMatchMode.CONTAINS:
-        return { field: `${field}.contains`, value: `%${filter.value}%` };
+        return [{ field: `${field}.contains`, value: `%${filter.value}%` }];
       case FilterMatchMode.STARTS_WITH:
-        return { field: `${field}.contains`, value: `${filter.value}%` };
+        return [{ field: `${field}.contains`, value: `${filter.value}%` }];
       case FilterMatchMode.ENDS_WITH:
-        return { field: `${field}.contains`, value: `%${filter.value}` };
+        return [{ field: `${field}.contains`, value: `%${filter.value}` }];
       case FilterMatchMode.NOT_CONTAINS:
-        return { field: `${field}.doesNotContain`, value: `%${filter.value}%` };
+        return [{ field: `${field}.doesNotContain`, value: `%${filter.value}%` }];
       case FilterMatchMode.EQUALS:
-        return { field: `${field}.equals`, value: filter.value };
+        return [{ field: `${field}.equals`, value: filter.value }];
       case FilterMatchMode.NOT_EQUALS:
-        return { field: `${field}.notEquals`, value: filter.value };
+        return [{ field: `${field}.notEquals`, value: filter.value }];
       case FilterMatchMode.LESS_THAN:
-        return { field: `${field}.lessThan`, value: filter.value };
+        return [{ field: `${field}.lessThan`, value: filter.value }];
       case FilterMatchMode.LESS_THAN_OR_EQUAL_TO:
-        return { field: `${field}.lessThanOrEqual`, value: filter.value };
+        return [{ field: `${field}.lessThanOrEqual`, value: filter.value }];
       case FilterMatchMode.GREATER_THAN:
-        return { field: `${field}.greaterThan`, value: filter.value };
+        return [{ field: `${field}.greaterThan`, value: filter.value }];
       case FilterMatchMode.GREATER_THAN_OR_EQUAL_TO:
-        return { field: `${field}.greaterThanOrEqual`, value: filter.value };
+        return [{ field: `${field}.greaterThanOrEqual`, value: filter.value }];
       case FilterMatchMode.DATE_IS:
-        return { field: `${field}.equals`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+        return [{ field: `${field}.equals`, value: dayjs(filter.value).format('YYYY-MM-DD') }];
       case FilterMatchMode.DATE_IS_NOT:
-        return { field: `${field}.notEquals`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+        return [{ field: `${field}.notEquals`, value: dayjs(filter.value).format('YYYY-MM-DD') }];
       case FilterMatchMode.DATE_BEFORE:
-        return { field: `${field}.lessThan`, value: dayjs(filter.value).format('YYYY-MM-DD') };
+        return [{ field: `${field}.lessThan`, value: dayjs(filter.value).format('YYYY-MM-DD') }];
       case FilterMatchMode.DATE_AFTER:
-        return { field: `${field}.greaterThan`, value: dayjs(filter.value).format('YYYY-MM-DD') };
-      // case FilterMatchMode.IN:
-      //   return { field: `${field}.in`, value: filter.value };
-      // case FilterMatchMode.NOT_IN:
-      //   return { field: `${field}.notIn`, value: filter.value };
-      // case FilterMatchMode.BETWEEN:
-      //   return { field: `${field}.notIn`, value: filter.value };
+        return [{ field: `${field}.greaterThan`, value: dayjs(filter.value).format('YYYY-MM-DD') }];
+      case FilterMatchMode.IN:
+        return [{ field: `${field}.in`, value: filter.value }];
+      case FilterMatchMode.NOT_IN:
+        return [{ field: `${field}.notIn`, value: filter.value }];
+      case FilterMatchMode.BETWEEN:
+        return [
+          { field: `${field}.greaterThanOrEqual`, value: filter.value[0] },
+          { field: `${field}.lessThanOrEqual`, value: filter.value[1] },
+        ];
       default:
         return null;
     }
@@ -142,11 +142,13 @@ export const LeadInfo = () => {
 
   useEffect(() => {
     dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.leadInfoMenuItem]));
+    dispatch(getUsers({}));
   }, []);
 
   const leadInfoList = useAppSelector(state => state.leadInfo.entities);
   const loading = useAppSelector(state => state.leadInfo.loading);
   const totalItems = useAppSelector(state => state.leadInfo.totalItems);
+  const users = useAppSelector(state => state.userManagement.users);
 
   const getAllEntities = query => {
     dispatch(
@@ -319,6 +321,49 @@ export const LeadInfo = () => {
 
   const booleanFilterTemplate = options => {
     return <TriStateCheckbox value={options.value} onChange={e => options.filterCallback(e.value)} />;
+  };
+
+  const assignNameFilterTemplate1 = (options: ColumnFilterElementTemplateOptions) => {
+    return (
+      <>
+        <MultiSelect
+          options={users}
+          onChange={(e: MultiSelectChangeEvent) => options.filterApplyCallback(e.value)}
+          optionLabel="login"
+          optionValue="id"
+          className="p-column-filter"
+          maxSelectedLabels={1}
+        />
+      </>
+    );
+  };
+
+  // 多选
+  const assignNameFilterTemplate = options => {
+    return (
+      <MultiSelect
+        value={options.value ?? ''}
+        options={users}
+        onChange={e => options.filterCallback(e.value)}
+        optionLabel="login"
+        optionValue="id"
+        placeholder="Any"
+        className="p-column-filter"
+      />
+    );
+  };
+
+  // 进度百分比
+  const percentFilterTemplate = options => {
+    return (
+      <React.Fragment>
+        <Slider value={options.value} onChange={e => options.filterCallback(e.value)} range className="m-3"></Slider>
+        <div className="align-items-center justify-content-between flex px-2">
+          <span>{options.value ? options.value[0] : 0}</span>
+          <span>{options.value ? options.value[1] : 100}</span>
+        </div>
+      </React.Fragment>
+    );
   };
 
   const allColumns = [
@@ -541,9 +586,12 @@ export const LeadInfo = () => {
       },
     },
     {
-      field: 'assignedUser.login',
+      field: 'assignedUserId',
       headerKey: 'lxmcrmApp.leadInfo.assignedUser',
       sortable: true,
+      filter: true,
+      showFilterMatchModes: false,
+      filterElement: assignNameFilterTemplate,
       body: rowData => {
         return <>{rowData.assignedUser ? rowData.assignedUser.login : ''}</>;
       },
@@ -683,9 +731,11 @@ export const LeadInfo = () => {
           filter={column?.filter}
           dataType={column?.dataType}
           showFilterOperator={column?.showFilterOperator}
+          showFilterMatchModes={column?.showFilterMatchModes}
           filterElement={column?.filterElement}
           exportable={column?.exportable}
           style={column?.style}
+          filterMenuStyle={{ width: '14rem' }}
         />
       );
     });
