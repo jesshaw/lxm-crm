@@ -1,2 +1,2 @@
-org.springframework.test.context.ContextCustomizerFactory = com.lexiangmaio.crm.\
+org.springframework.test.context.ContextCustomizerFactory = com.lexiangmiao.crm.\
     config.SqlTestContainersSpringContextCustomizerFactory

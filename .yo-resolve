@@ -1,9 +1,9 @@
-src\main\java\com\lexiangmaio\crm\security\DomainUserDetailsService.java skip
+src\main\java\com\lexiangmiao\crm\security\DomainUserDetailsService.java skip
 src\main\webapp\app\entities\resource\resource-update.tsx skip
 README.md skip
-src\main\java\com\lexiangmaio\crm\web\rest\EmployeeResource.java skip
-src\main\java\com\lexiangmaio\crm\repository\ResourceRepository.java skip
-src\main\java\com\lexiangmaio\crm\domain\Resource.java skip
+src\main\java\com\lexiangmiao\crm\web\rest\EmployeeResource.java skip
+src\main\java\com\lexiangmiao\crm\repository\ResourceRepository.java skip
+src\main\java\com\lexiangmiao\crm\domain\Resource.java skip
 src\main\webapp\app\entities\reducers.ts skip
 src\main\resources\config\liquibase\fake-data\resource.csv skip
 .gitignore skip

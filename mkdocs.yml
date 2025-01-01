@@ -1,11 +1,11 @@
-site_name: 乐享CRM
+site_name: 乐香喵-CRM
 site_description: 一个客户关系管理系统
 repo_url: http://github.com/jesshaw/lxm-crm
 repo_name: lxm-crm
 edit_uri: edit/main/
 
 # Copyright
-copyright: Copyright &copy; 2024 - 2025 Jes Shaw
+copyright: Copyright &copy; 2024 - 2025 乐香喵
 
 theme:
   language: 'zh'

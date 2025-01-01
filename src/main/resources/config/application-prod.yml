@@ -17,7 +17,7 @@ logging:
   level:
     ROOT: INFO
     tech.jhipster: INFO
-    com.lexiangmaio.crm: INFO
+    com.lexiangmiao.crm: INFO
 
 management:
   prometheus:

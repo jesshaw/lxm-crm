@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 // import { Button, Table } from 'reactstrap';
 import { Toolbar } from 'primereact/toolbar';
-import { DataTable, DataTableStateEvent } from 'primereact/datatable';
+import { DataTable, DataTableFilterMeta, DataTableStateEvent } from 'primereact/datatable';
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -17,6 +17,22 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { getEntities, deleteEntity } from './employee.reducer';
 import { IEmployee } from 'app/shared/model/employee.model';
 import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
+import { FilterMatchMode, FilterOperator } from 'primereact/api';
+import { classNames } from 'primereact/utils';
+import { Slider } from 'primereact/slider';
+import {
+  booleanFilterTemplate,
+  convertFiltersToQueryString,
+  dateFilterTemplate,
+  numericFilterTemplate,
+  LxmColumnProps,
+} from 'app/shared/util/lxm-utils';
+
+const defaultFilters: DataTableFilterMeta = {
+  title: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+
+  nickName: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+};
 
 export const Employee = () => {
   const dispatch = useAppDispatch();
@@ -26,6 +42,8 @@ export const Employee = () => {
 
   const [sortState, setSortState] = useState(overrideSortStateWithQueryParams(getSortState(pageLocation, 'id'), pageLocation.search));
 
+  const [filters, setFilters] = useState<DataTableFilterMeta>(defaultFilters);
+
   useEffect(() => {
     dispatch(setBreadItems([MenuItemsData.homeMenuItem, MenuItemsData.entitesMenuItem, MenuItemsData.employeeMenuItem]));
   }, []);
@@ -33,17 +51,19 @@ export const Employee = () => {
   const employeeList = useAppSelector(state => state.employee.entities);
   const loading = useAppSelector(state => state.employee.loading);
 
-  const getAllEntities = () => {
+  const getAllEntities = query => {
     dispatch(
       getEntities({
+        query,
         sort: `${sortState.sort},${sortState.order}`,
       }),
     );
   };
 
   const sortEntities = () => {
-    getAllEntities();
-    const endURL = `?sort=${sortState.sort},${sortState.order}`;
+    const queryString = convertFiltersToQueryString(filters);
+    getAllEntities(queryString);
+    const endURL = `?${queryString}&sort=${sortState.sort},${sortState.order}`;
     if (pageLocation.search !== endURL) {
       navigate(`${pageLocation.pathname}${endURL}`);
     }
@@ -51,7 +71,7 @@ export const Employee = () => {
 
   useEffect(() => {
     sortEntities();
-  }, [sortState.order, sortState.sort]);
+  }, [sortState.order, sortState.sort, filters]);
 
   const onSort = (e: DataTableStateEvent) => {
     setSortState({
@@ -59,6 +79,10 @@ export const Employee = () => {
       order: sortState.order === ASC ? DESC : ASC,
       sort: e.sortField,
     });
+  };
+
+  const onFilter = (e: DataTableStateEvent) => {
+    setFilters(e.filters);
   };
 
   const handleSyncList = () => {
@@ -127,7 +151,7 @@ export const Employee = () => {
     </>
   );
 
-  const allColumns = [
+  const allColumns: LxmColumnProps[] = [
     {
       field: 'id',
       headerKey: 'lxmcrmApp.employee.id',
@@ -137,11 +161,13 @@ export const Employee = () => {
       field: 'title',
       headerKey: 'lxmcrmApp.employee.title',
       sortable: true,
+      filter: true,
     },
     {
       field: 'nickName',
       headerKey: 'lxmcrmApp.employee.nickName',
       sortable: true,
+      filter: true,
     },
     {
       field: 'user.login',
@@ -291,6 +317,11 @@ export const Employee = () => {
           header={translate(column?.headerKey)}
           body={column?.body ? column.body : undefined}
           sortable={column?.sortable}
+          filter={column?.filter}
+          dataType={column?.dataType}
+          showFilterOperator={column?.showFilterOperator}
+          showFilterMatchModes={column?.showFilterMatchModes}
+          filterElement={column?.filterElement}
           exportable={column?.exportable}
           style={column?.style}
         />

@@ -31,12 +31,7 @@ import { MenuItemsData, setBreadItems } from 'app/shared/reducers/ui';
 import { FilterMatchMode, FilterOperator } from 'primereact/api';
 import { classNames } from 'primereact/utils';
 import { Slider } from 'primereact/slider';
-import {
-  booleanFilterTemplate,
-  convertFiltersToQueryString,
-  dateFilterTemplate,
-  numericFilterTemplate,
-} from 'app/shared/util/filter-utils';
+import { booleanFilterTemplate, convertFiltersToQueryString, dateFilterTemplate, numericFilterTemplate } from 'app/shared/util/lxm-utils';
 
 export const LeadInfo = () => {
   const dispatch = useAppDispatch();

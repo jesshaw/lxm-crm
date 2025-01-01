@@ -1,10 +1,10 @@
 .gitignore
 crm.jdl
 README.md
-src/main/java/com/lexiangmaio/crm/domain/Resource.java
-src/main/java/com/lexiangmaio/crm/repository/ResourceRepository.java
-src/main/java/com/lexiangmaio/crm/security/DomainUserDetailsService.java
-src/main/java/com/lexiangmaio/crm/web/rest/EmployeeResource.java
+src/main/java/com/lexiangmiao/crm/domain/Resource.java
+src/main/java/com/lexiangmiao/crm/repository/ResourceRepository.java
+src/main/java/com/lexiangmiao/crm/security/DomainUserDetailsService.java
+src/main/java/com/lexiangmiao/crm/web/rest/EmployeeResource.java
 src/main/resources/config/liquibase/fake-data/resource.csv
 src/main/webapp/app/entities/resource/resource-update.tsx
 src/main/webapp/app/modules/home/home.tsx

@@ -40,7 +40,7 @@ git add . && git commit --amend --no-edit
 
 # 重新发布指定的版本
 
-TAG='v1.1.7' MSG='Add the documentation link and Update the logo' && git push -d origin "${TAG}" && git tag -d "${TAG}" && git tag "${TAG}" -m "${MSG}" && git push origin "${TAG}"
+TAG='v1.1.8' MSG='Add filter for entity' && git push -d origin "${TAG}" && git tag -d "${TAG}" && git tag "${TAG}" -m "${MSG}" && git push origin "${TAG}"
 
 ```
 
