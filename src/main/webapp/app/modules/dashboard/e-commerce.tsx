@@ -98,7 +98,7 @@ const ECommerce = () => {
     setSalesData({ ...salesData, name: translate('dashboards.sales.title') });
     setRevenueData({ ...revenueData, name: translate('dashboards.revenue.title') });
     setVisitorsData({ ...visitorsData, name: translate('dashboards.visitors.title') });
-    setstockData({ ...stockData, name: translate('dashboards.visitors.title') });
+    setstockData({ ...stockData, name: translate('dashboards.stock.title') });
 
     const newRevenueChartData = {
       ...revenueChartData,
